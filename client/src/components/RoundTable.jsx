@@ -1,4 +1,5 @@
 import { formatCents } from '../money.js'
+import Avatar from './Avatar.jsx'
 import { seatPositions } from '../tableLayout.js'
 
 function balanceClass(cents) {
@@ -29,6 +30,7 @@ function RoundTable({ members, totalCents, currentUserId, onAdd }) {
           className={`seat${m.userId === currentUserId ? ' me' : ''}`}
           style={{ left: `${positions[i].left}%`, top: `${positions[i].top}%` }}
         >
+          <Avatar user={m} size={36} />
           <span className="seat-name">{m.username}</span>
           <span className={`seat-balance ${balanceClass(m.balanceCents)}`}>
             {m.balanceCents > 0 ? '+' : ''}{formatCents(m.balanceCents)}

@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.coinis.splitter.model.Avatar;
 import com.coinis.splitter.model.User;
 import com.coinis.splitter.repository.UserRepository;
 import com.coinis.splitter.security.AuthUser;
@@ -47,10 +48,15 @@ class AuthControllerTest {
     }
 
     @Test
-    void meReturnsLoggedInUser() throws Exception {
+    void meReturnsLoggedInUserWithAvatar() throws Exception {
+        User ana = withId(new User("ana", "hash"), 1L);
+        ana.setAvatar(Avatar.FOX);
+        when(userService.get(1)).thenReturn(ana);
+
         mvc.perform(get("/api/auth/me").with(user(new AuthUser(1, "ana", "hash"))))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value("ana"));
+                .andExpect(jsonPath("$.username").value("ana"))
+                .andExpect(jsonPath("$.avatar").value("FOX"));
     }
 
     @Test
@@ -108,6 +114,7 @@ class AuthControllerTest {
 
     private void givenUser(String username, String password) {
         User user = withId(new User(username, new BCryptPasswordEncoder().encode(password)), 1L);
+        when(userService.get(1)).thenReturn(user);
         when(users.findByUsername(any())).thenReturn(Optional.empty());
         when(users.findByUsername(username)).thenReturn(Optional.of(user));
     }

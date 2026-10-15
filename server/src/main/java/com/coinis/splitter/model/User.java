@@ -2,6 +2,8 @@ package com.coinis.splitter.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -22,6 +24,11 @@ public class User {
     @Column(name = "password_hash", nullable = false, length = 100)
     private String passwordHash;
 
+    // null dok korisnik ne izabere avatara; tada klijent prikazuje inicijale
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private Avatar avatar;
+
     protected User() {
     }
 
@@ -40,5 +47,13 @@ public class User {
 
     public String getPasswordHash() {
         return passwordHash;
+    }
+
+    public Avatar getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(Avatar avatar) {
+        this.avatar = avatar;
     }
 }

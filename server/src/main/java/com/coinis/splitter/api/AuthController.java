@@ -3,6 +3,7 @@ package com.coinis.splitter.api;
 import com.coinis.splitter.api.dto.LoginRequest;
 import com.coinis.splitter.api.dto.RegisterRequest;
 import com.coinis.splitter.api.dto.UserResponse;
+import com.coinis.splitter.model.User;
 import com.coinis.splitter.security.AuthUser;
 import com.coinis.splitter.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -57,10 +58,11 @@ public class AuthController {
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponse register(@Valid @RequestBody RegisterRequest request,
             HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
-        AuthUser user = AuthUser.from(userService.register(request.username(), request.password()));
+        User registered = userService.register(request.username(), request.password());
+        AuthUser user = AuthUser.from(registered);
         startSession(UsernamePasswordAuthenticationToken.authenticated(user, null, user.getAuthorities()),
                 httpRequest, httpResponse);
-        return toResponse(user);
+        return UserResponse.from(registered);
     }
 
     @PostMapping("/login")
@@ -74,12 +76,13 @@ public class AuthController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Pogresno korisnicko ime ili lozinka");
         }
         startSession(authentication, httpRequest, httpResponse);
-        return toResponse((AuthUser) authentication.getPrincipal());
+        return UserResponse.from(userService.get(((AuthUser) authentication.getPrincipal()).id()));
     }
 
     @GetMapping("/me")
     public UserResponse me(@AuthenticationPrincipal AuthUser user) {
-        return toResponse(user);
+        // Iz baze, jer se avatar mijenja posle prijave, a AuthUser u sesiji ga ne prati
+        return UserResponse.from(userService.get(user.id()));
     }
 
     private void startSession(Authentication authentication, HttpServletRequest request, HttpServletResponse response) {
@@ -91,9 +94,5 @@ public class AuthController {
         context.setAuthentication(authentication);
         contextHolder.setContext(context);
         contextRepository.saveContext(context, request, response);
-    }
-
-    private static UserResponse toResponse(AuthUser user) {
-        return new UserResponse(user.id(), user.username());
     }
 }

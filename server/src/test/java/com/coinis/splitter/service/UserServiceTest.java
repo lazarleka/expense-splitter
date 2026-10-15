@@ -8,8 +8,10 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.coinis.splitter.model.Avatar;
 import com.coinis.splitter.model.User;
 import com.coinis.splitter.repository.UserRepository;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -40,5 +42,15 @@ class UserServiceTest {
                 .isInstanceOfSatisfying(ResponseStatusException.class,
                         e -> assertThat(e.getStatusCode()).isEqualTo(HttpStatus.CONFLICT));
         verify(users, never()).save(any());
+    }
+
+    // Scenarij "Avatar": novi korisnik nema avatara, pa bira lisicu
+    @Test
+    void newUserHasNoAvatarUntilChosen() {
+        User ana = new User("ana", "hash");
+        when(users.findById(1L)).thenReturn(Optional.of(ana));
+
+        assertThat(ana.getAvatar()).isNull();
+        assertThat(service.setAvatar(1, Avatar.FOX).getAvatar()).isEqualTo(Avatar.FOX);
     }
 }
