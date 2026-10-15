@@ -1,5 +1,6 @@
 package com.coinis.splitter.api;
 
+import com.coinis.splitter.api.dto.ArchiveConsentRequest;
 import com.coinis.splitter.api.dto.EventDetailResponse;
 import com.coinis.splitter.api.dto.EventListResponse;
 import com.coinis.splitter.api.dto.EventRequest;
@@ -27,6 +28,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -86,6 +88,13 @@ public class EventController {
                 request.payerId()));
     }
 
+    @PutMapping("/{id}/archive-consent")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void archiveConsent(@AuthenticationPrincipal AuthUser user, @PathVariable long id,
+            @Valid @RequestBody ArchiveConsentRequest request) {
+        eventService.setArchiveConsent(id, user.id(), request.consent());
+    }
+
     @PostMapping("/{id}/invitations")
     @ResponseStatus(HttpStatus.CREATED)
     public InvitationResponse invite(@AuthenticationPrincipal AuthUser user, @PathVariable long id,
@@ -98,7 +107,8 @@ public class EventController {
     }
 
     private static MemberResponse toMember(EventMember m, long balanceCents) {
-        return new MemberResponse(m.getUser().getId(), m.getUser().getUsername(), balanceCents);
+        return new MemberResponse(m.getUser().getId(), m.getUser().getUsername(), balanceCents,
+                m.hasArchiveConsent());
     }
 
     private static ExpenseResponse toExpense(Expense e) {

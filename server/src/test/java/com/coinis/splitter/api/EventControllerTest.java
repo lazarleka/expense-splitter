@@ -4,11 +4,13 @@ import static com.coinis.splitter.TestData.event;
 import static com.coinis.splitter.TestData.expense;
 import static com.coinis.splitter.TestData.member;
 import static com.coinis.splitter.TestData.user;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -126,6 +128,21 @@ class EventControllerTest {
                 .andExpect(status().isBadRequest());
         addExpense("{\"title\": \"Rucak\", \"amountCents\": -100, \"payerId\": 1}")
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void archiveConsentRequiresValue() throws Exception {
+        mvc.perform(put("/api/events/10/archive-consent").with(user(iva)).with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON).content("{}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void archiveConsentIsPassedToService() throws Exception {
+        mvc.perform(put("/api/events/10/archive-consent").with(user(iva)).with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"consent\": true}"))
+                .andExpect(status().isNoContent());
+        verify(eventService).setArchiveConsent(10, 3, true);
     }
 
     private ResultActions addExpense(String json) throws Exception {

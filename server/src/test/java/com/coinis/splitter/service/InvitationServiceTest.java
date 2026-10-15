@@ -21,6 +21,7 @@ import com.coinis.splitter.repository.EventRepository;
 import com.coinis.splitter.repository.ExpenseRepository;
 import com.coinis.splitter.repository.InvitationRepository;
 import com.coinis.splitter.repository.UserRepository;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -71,6 +72,28 @@ class InvitationServiceTest {
         verify(members, never()).save(org.mockito.ArgumentMatchers.argThat(m -> m.getUser() == iva));
         // Iva nije clan, pa za nju dogadjaj ne postoji
         assertStatus(() -> eventService.requireMember(10, 3), HttpStatus.NOT_FOUND);
+    }
+
+    // Scenarij "Arhiviranje": novi clan ponistava date saglasnosti
+    @Test
+    void acceptingInvitationResetsArchiveConsents() {
+        EventMember anaMember = member(100, trip, ana);
+        anaMember.setArchiveConsent(true);
+        when(members.findAllByEventIdOrderByIdAsc(10L)).thenReturn(List.of(anaMember));
+        when(invitations.findById(200L)).thenReturn(Optional.of(invitation(200, trip, marko)));
+
+        service.accept(200, 2);
+
+        assertThat(anaMember.hasArchiveConsent()).isFalse();
+    }
+
+    @Test
+    void archivedEventRejectsInvitationsAndAnswers() {
+        trip.archive();
+        when(invitations.findById(200L)).thenReturn(Optional.of(invitation(200, trip, marko)));
+
+        assertStatus(() -> service.invite(10, 1, "iva"), HttpStatus.CONFLICT);
+        assertStatus(() -> service.accept(200, 2), HttpStatus.CONFLICT);
     }
 
     @Test

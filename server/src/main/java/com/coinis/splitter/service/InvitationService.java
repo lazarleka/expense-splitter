@@ -53,12 +53,13 @@ public class InvitationService {
         return invitations.findAllByInviteeIdAndStatusOrderByIdAsc(userId, Invitation.Status.PENDING);
     }
 
-    /** Prihvatanje pravi clanstvo; od ovog trenutka korisnik ulazi u red ulaska. */
+    /** Prihvatanje pravi clanstvo (korisnik ulazi u red ulaska) i ponistava saglasnosti za arhiviranje. */
     @Transactional
     public EventMember accept(long invitationId, long userId) {
         Invitation invitation = requirePending(invitationId, userId);
         EventService.requireActive(invitation.getEvent());
         invitation.accept();
+        eventService.resetArchiveConsents(eventService.members(invitation.getEvent().getId()));
         return members.save(new EventMember(invitation.getEvent(), invitation.getInvitee()));
     }
 

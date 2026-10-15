@@ -54,6 +54,23 @@ function EventPage({ user }) {
     }
   }
 
+  async function handleConsent(consent) {
+    setError('')
+    setNotice('')
+    try {
+      await api(`/events/${id}/archive-consent`, {
+        method: 'PUT',
+        body: { consent },
+        errors: { 409: 'Dogadjaj je vec arhiviran.' },
+      })
+      const updated = await api(`/events/${id}`)
+      setEvent(updated)
+      if (updated.archived) setNotice('Svi clanovi su saglasni. Dogadjaj je arhiviran.')
+    } catch (err) {
+      setError(err.message)
+    }
+  }
+
   if (notFound) {
     return (
       <section className="card">
@@ -68,6 +85,8 @@ function EventPage({ user }) {
   }
 
   const canInvite = event.creatorId === user.id && !event.archived
+  const me = event.members.find((m) => m.userId === user.id)
+  const consents = event.members.filter((m) => m.archiveConsent).length
 
   return (
     <>
@@ -87,6 +106,7 @@ function EventPage({ user }) {
           {event.members.map((m) => (
             <li key={m.userId}>
               {m.username}: {formatCents(m.balanceCents)}
+              {!event.archived && m.archiveConsent && <small> (saglasan za arhiviranje)</small>}
             </li>
           ))}
         </ol>
@@ -107,6 +127,23 @@ function EventPage({ user }) {
         <section className="card">
           <h2>Novi trosak</h2>
           <ExpenseForm eventId={event.id} members={event.members} defaultPayerId={user.id} onAdded={reload} />
+        </section>
+      )}
+
+      {!event.archived && me && (
+        <section className="card">
+          <h2>Arhiviranje</h2>
+          <p>
+            Saglasno {consents} od {event.members.length} clanova. Dogadjaj se arhivira kad su svi saglasni,
+            a novi trosak ili novi clan ponistava saglasnosti.
+          </p>
+          {me.archiveConsent ? (
+            <button type="button" className="secondary" onClick={() => handleConsent(false)}>
+              Povuci saglasnost
+            </button>
+          ) : (
+            <button type="button" onClick={() => handleConsent(true)}>Saglasan sam sa arhiviranjem</button>
+          )}
         </section>
       )}
 

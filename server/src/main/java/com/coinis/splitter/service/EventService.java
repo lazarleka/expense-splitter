@@ -75,7 +75,35 @@ public class EventService {
                 .findFirst()
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Platilac nije clan dogadjaja"));
 
-        return expenses.save(new Expense(event, title.trim(), amountCents, payer, current.size()));
+        Expense saved = expenses.save(new Expense(event, title.trim(), amountCents, payer, current.size()));
+        resetArchiveConsents(current);
+        return saved;
+    }
+
+    /**
+     * Clan daje ili povlaci saglasnost. Kad su svi clanovi saglasni, dogadjaj se arhivira.
+     * @return true ako je dogadjaj ovim arhiviran
+     */
+    @Transactional
+    public boolean setArchiveConsent(long eventId, long userId, boolean consent) {
+        EventMember member = requireMember(eventId, userId);
+        Event event = member.getEvent();
+        requireActive(event);
+
+        member.setArchiveConsent(consent);
+        List<EventMember> all = members(eventId);
+        // Clan iz requireMember i iz liste moze biti isti objekat ili ne; zato se njegov glas uzima direktno
+        boolean everyoneAgrees = all.stream()
+                .allMatch(m -> m.getId().equals(member.getId()) ? consent : m.hasArchiveConsent());
+        if (everyoneAgrees) {
+            event.archive();
+        }
+        return everyoneAgrees;
+    }
+
+    /** Novi trosak ili novi clan mijenja obracun, pa ranije saglasnosti vise ne vaze. */
+    public void resetArchiveConsents(List<EventMember> eventMembers) {
+        eventMembers.forEach(m -> m.setArchiveConsent(false));
     }
 
     public EventOverview overview(long eventId, long userId) {

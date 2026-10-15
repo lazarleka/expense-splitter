@@ -123,7 +123,51 @@ class EventServiceTest {
         verify(expenses, never()).save(any());
     }
 
-    private void givenMembers(User... ordered) {
+    // Scenarij "Arhiviranje": oboje daju saglasnost, dogadjaj je arhiviran
+    @Test
+    void archivedWhenEveryoneConsents() {
+        givenMembers(ana, marko);
+
+        assertThat(service.setArchiveConsent(10, 1, true)).isFalse();
+        assertThat(trip.isArchived()).isFalse();
+        assertThat(service.setArchiveConsent(10, 2, true)).isTrue();
+        assertThat(trip.isArchived()).isTrue();
+    }
+
+    // Scenarij "Arhiviranje": Ana da saglasnost, Marko unese trosak, Anina saglasnost se ponistava
+    @Test
+    void newExpenseResetsConsents() {
+        List<EventMember> list = givenMembers(ana, marko);
+        when(expenses.save(any(Expense.class))).thenAnswer(i -> i.getArgument(0));
+
+        service.setArchiveConsent(10, 1, true);
+        service.addExpense(10, 2, "Kafa", 400, 2);
+
+        assertThat(list.get(0).hasArchiveConsent()).isFalse();
+        assertThat(service.setArchiveConsent(10, 2, true)).isFalse();
+        assertThat(trip.isArchived()).isFalse();
+    }
+
+    @Test
+    void consentCanBeWithdrawn() {
+        givenMembers(ana, marko);
+
+        service.setArchiveConsent(10, 1, true);
+        service.setArchiveConsent(10, 1, false);
+
+        assertThat(service.setArchiveConsent(10, 2, true)).isFalse();
+        assertThat(trip.isArchived()).isFalse();
+    }
+
+    @Test
+    void archivedEventRejectsConsentChange() {
+        givenMembers(ana, marko);
+        trip.archive();
+
+        assertStatus(() -> service.setArchiveConsent(10, 1, false), HttpStatus.CONFLICT);
+    }
+
+    private List<EventMember> givenMembers(User... ordered) {
         List<EventMember> list = new ArrayList<>();
         for (int i = 0; i < ordered.length; i++) {
             EventMember m = member(100 + i, trip, ordered[i]);
@@ -131,5 +175,6 @@ class EventServiceTest {
             when(members.findByEventIdAndUserId(10L, ordered[i].getId())).thenReturn(Optional.of(m));
         }
         when(members.findAllByEventIdOrderByIdAsc(10L)).thenReturn(list);
+        return list;
     }
 }

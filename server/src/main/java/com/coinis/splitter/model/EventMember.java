@@ -1,5 +1,6 @@
 package com.coinis.splitter.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -30,6 +31,10 @@ public class EventMember {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    // Saglasnost za arhiviranje; novi trosak ili novi clan je ponistava
+    @Column(name = "archive_consent", nullable = false)
+    private boolean archiveConsent;
+
     protected EventMember() {
     }
 
@@ -48,5 +53,13 @@ public class EventMember {
 
     public User getUser() {
         return user;
+    }
+
+    public boolean hasArchiveConsent() {
+        return archiveConsent;
+    }
+
+    public void setArchiveConsent(boolean archiveConsent) {
+        this.archiveConsent = archiveConsent;
     }
 }
