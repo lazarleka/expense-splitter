@@ -15,44 +15,39 @@
   ni kad izmedju njih vec postoji zahtjev na cekanju (u bilo kom smjeru).
 - Korisnik vidi listu prijatelja, primljene zahtjeve na cekanju i poslate zahtjeve na cekanju.
 
-### 3. Avatar
-- Svaki korisnik bira svog avatara iz gotovog skupa od 12 avatara.
-- Dok ne izabere, prikazuju se njegovi inicijali u boji koja zavisi od korisnika.
-- Avatar se prikazuje uz ime: u zaglavlju, na listi prijatelja i na mjestu za stolom.
-
-### 4. Dogadjaji
+### 3. Dogadjaji
 - Posle prijave korisnik vidi tri liste: pozivnice na cekanju, aktivni dogadjaji i arhivirani dogadjaji.
 - Korisnik kreira dogadjaj sa nazivom (obavezan). Kreator automatski postaje prvi clan.
 - Korisnik vidi samo dogadjaje u kojima je clan.
 
-### 5. Pozivnice
+### 4. Pozivnice
 - Kreator dogadjaja poziva nove ucesnike samo sa svoje liste prijatelja.
 - Pozvani korisnik prihvata ili odbija pozivnicu. Tek kad prihvati postaje clan.
 - Odbijeni korisnik moze ponovo biti pozvan.
 - Ne moze se pozvati korisnik koji nije prijatelj kreatora, postojeci clan ni korisnik koji vec ima pozivnicu na cekanju.
 
-### 6. Troskovi
+### 5. Troskovi
 - Clan unosi trosak: naziv, iznos i ko je platio (platilac mora biti clan).
 - Iznosi se cuvaju kao cijeli brojevi u centima.
 - Trosak se dijeli jednako na clanove koji su clanovi u trenutku unosa troska.
   Clan koji se pridruzi kasnije ne ucestvuje u ranijim troskovima.
 
-### 7. Obracun (po dogadjaju)
+### 6. Obracun (po dogadjaju)
 - Udio = iznos / broj clanova troska (cjelobrojno dijeljenje u centima).
 - Visak centa ide prvim clanovima po redu ulaska u dogadjaj (kreator prvi, pa ostali po vremenu prihvatanja).
 - Stanje clana = (sta je platio) - (zbir njegovih udjela).
   Pozitivno stanje: potrazuje; negativno: duguje.
 - Dugovanja: duznici se uparuju sa povjeriocima po redu ulaska, dok sva stanja nisu nula.
 
-### 8. Arhiviranje
+### 7. Arhiviranje
 - Svaki clan moze dati ili povuci saglasnost za arhiviranje.
 - Dogadjaj se arhivira automatski kad su svi clanovi saglasni.
 - Novi trosak ili novi clan ponistava sve date saglasnosti.
 - Arhiviran dogadjaj je samo za citanje: nema novih troskova, pozivnica ni saglasnosti.
 
-### 9. Prikaz dogadjaja
+### 8. Prikaz dogadjaja
 - Clanovi sjede za okruglim stolom, ravnomjerno rasporedjeni po krugu, po redu ulaska.
-- Svako mjesto prikazuje avatar, ime clana i njegovo stanje.
+- Svako mjesto prikazuje ime clana i njegovo stanje.
 - U sredini stola su ukupan trosak dogadjaja i dugme "+" za unos novog troska.
 - Ispod stola je lista dugovanja (ko kome duguje).
 
@@ -82,11 +77,6 @@
 - Marko salje zahtjev Ani: odbijeno, vec su prijatelji
 - Ana salje zahtjev Ivi dok joj Iva vec ima zahtjev na cekanju: odbijeno
 
-### Avatar
-- Novi korisnik nema avatara: prikazuju se inicijali
-- Ana bira avatara "lisica": svuda gdje se prikazuje Ana vidi se lisica
-- Avatar koji nije u skupu: izbor se ne prihvata
-
 ### Pozivnica
 - Marko i Iva su Anini prijatelji
 - Ana kreira dogadjaj i poziva Marka i Ivu
@@ -112,4 +102,5 @@
 - Brisanje i izmjena troskova, dogadjaja i naloga
 - Izlazak iz dogadjaja i izbacivanje clana
 - Promjena lozinke, oporavak naloga, prijava preko drugih servisa
-- Uklanjanje prijatelja; postavljanje sopstvene slike kao avatara
+- Uklanjanje prijatelja
+- Avatari i slike korisnika

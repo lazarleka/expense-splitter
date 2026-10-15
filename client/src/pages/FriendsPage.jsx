@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { api } from '../api.js'
-import Avatar from '../components/Avatar.jsx'
 
 const EMPTY = { friends: [], incoming: [], outgoing: [] }
 
@@ -88,10 +87,7 @@ function FriendsPage() {
           <ul className="plain">
             {data.incoming.map((r) => (
               <li key={r.id} className="row between">
-                <span className="row">
-                  <Avatar user={r.user} />
-                  <span><strong>{r.user.username}</strong> zeli da vam bude prijatelj</span>
-                </span>
+                <span><strong>{r.user.username}</strong> zeli da vam bude prijatelj</span>
                 <span className="row">
                   <button type="button" onClick={() => answer(r, 'accept')}>Prihvati</button>
                   <button type="button" className="secondary" onClick={() => answer(r, 'decline')}>Odbij</button>
@@ -109,10 +105,7 @@ function FriendsPage() {
         ) : (
           <ul className="plain">
             {data.friends.map((f) => (
-              <li key={f.id} className="row">
-                <Avatar user={f} />
-                {f.username}
-              </li>
+              <li key={f.id}>{f.username}</li>
             ))}
           </ul>
         )}

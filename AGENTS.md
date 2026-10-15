@@ -30,7 +30,6 @@ Zahtjevi su u SPEC.md.
 - Lozinke se hashuju (BCrypt) i nikad se ne vracaju u odgovoru niti ispisuju u log
 - Arhiviran dogadjaj odbija svaku izmjenu (409)
 - U dogadjaj se poziva samo prijatelj kreatora; prijateljstvo je samo prihvacen zahtjev, u bilo kom smjeru
-- Avatar je kljuc iz fiksnog skupa (enum Avatar na serveru); klijent ga prikazuje preko client/src/avatars.js
 - Svaki scenarij iz SPEC.md ima svoj test
 - Pokreni /provjeri prije nego sto kazes da je zadatak gotov i prije commita
 - Jedna funkcionalnost = jedan commit, poruka u formatu tipa: "feat: ...", "fix: ...", "chore: ..."

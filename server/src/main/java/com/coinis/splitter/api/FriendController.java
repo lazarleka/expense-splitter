@@ -32,7 +32,7 @@ public class FriendController {
     @GetMapping
     public FriendsResponse list(@AuthenticationPrincipal AuthUser user) {
         return new FriendsResponse(
-                friendService.friends(user.id()).stream().map(UserResponse::from).toList(),
+                friendService.friends(user.id()).stream().map(FriendController::toUser).toList(),
                 friendService.incoming(user.id()).stream().map(f -> toRequest(f, f.getRequester())).toList(),
                 friendService.outgoing(user.id()).stream().map(f -> toRequest(f, f.getAddressee())).toList());
     }
@@ -56,7 +56,11 @@ public class FriendController {
         friendService.decline(id, user.id());
     }
 
+    static UserResponse toUser(User u) {
+        return new UserResponse(u.getId(), u.getUsername());
+    }
+
     private static FriendRequestResponse toRequest(Friendship f, User other) {
-        return new FriendRequestResponse(f.getId(), UserResponse.from(other));
+        return new FriendRequestResponse(f.getId(), toUser(other));
     }
 }

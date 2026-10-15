@@ -112,8 +112,8 @@ public class EventController {
     }
 
     private static MemberResponse toMember(EventMember m, long balanceCents) {
-        return new MemberResponse(m.getUser().getId(), m.getUser().getUsername(), m.getUser().getAvatar(),
-                balanceCents, m.hasArchiveConsent());
+        return new MemberResponse(m.getUser().getId(), m.getUser().getUsername(), balanceCents,
+                m.hasArchiveConsent());
     }
 
     private static ExpenseResponse toExpense(Expense e) {
