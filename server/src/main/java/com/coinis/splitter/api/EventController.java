@@ -75,8 +75,13 @@ public class EventController {
                 .map(t -> new TransferResponse(names.get(t.fromId()), names.get(t.toId()), t.amountCents()))
                 .toList();
 
+        // overview je vec provjerio clanstvo
+        List<Long> pendingInviteeIds = invitationService.pendingForEvent(id).stream()
+                .map(i -> i.getInvitee().getId())
+                .toList();
+
         return new EventDetailResponse(event.getId(), event.getName(), event.isArchived(),
-                event.getCreator().getId(), overview.totalCents(), members,
+                event.getCreator().getId(), overview.totalCents(), members, pendingInviteeIds,
                 overview.expenses().stream().map(EventController::toExpense).toList(), transfers);
     }
 

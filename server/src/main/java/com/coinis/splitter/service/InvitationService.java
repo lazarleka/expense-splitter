@@ -20,16 +20,21 @@ public class InvitationService {
     private final EventMemberRepository members;
     private final UserRepository users;
     private final EventService eventService;
+    private final FriendService friendService;
 
     public InvitationService(InvitationRepository invitations, EventMemberRepository members,
-            UserRepository users, EventService eventService) {
+            UserRepository users, EventService eventService, FriendService friendService) {
         this.invitations = invitations;
         this.members = members;
         this.users = users;
         this.eventService = eventService;
+        this.friendService = friendService;
     }
 
-    /** Samo kreator poziva. Ne moze se pozvati clan ni korisnik koji vec ima pozivnicu na cekanju. */
+    /**
+     * Samo kreator poziva, i to samo svoje prijatelje. Ne moze se pozvati clan ni korisnik
+     * koji vec ima pozivnicu na cekanju.
+     */
     @Transactional
     public Invitation invite(long eventId, long inviterId, String username) {
         Event event = eventService.requireMember(eventId, inviterId).getEvent();
@@ -40,6 +45,9 @@ public class InvitationService {
 
         User invitee = users.findByUsername(username.trim())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Korisnik ne postoji"));
+        if (!friendService.areFriends(inviterId, invitee.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Mozete pozvati samo prijatelje");
+        }
         if (members.existsByEventIdAndUserId(eventId, invitee.getId())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Korisnik je vec clan");
         }
@@ -47,6 +55,11 @@ public class InvitationService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Pozivnica vec ceka odgovor");
         }
         return invitations.save(new Invitation(event, invitee));
+    }
+
+    /** Pozivnice na cekanju za dogadjaj; pozivalac je vec provjerio clanstvo. */
+    public List<Invitation> pendingForEvent(long eventId) {
+        return invitations.findAllByEventIdAndStatusOrderByIdAsc(eventId, Invitation.Status.PENDING);
     }
 
     public List<Invitation> pending(long userId) {

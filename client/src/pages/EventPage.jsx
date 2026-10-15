@@ -13,6 +13,7 @@ function EventPage({ user }) {
   const [invitee, setInvitee] = useState('')
   const [notice, setNotice] = useState('')
   const [addingExpense, setAddingExpense] = useState(false)
+  const [friends, setFriends] = useState([])
 
   async function reload() {
     setEvent(await api(`/events/${id}`))
@@ -25,9 +26,11 @@ function EventPage({ user }) {
 
   useEffect(() => {
     let ignore = false
-    api(`/events/${id}`)
-      .then((data) => {
-        if (!ignore) setEvent(data)
+    Promise.all([api(`/events/${id}`), api('/friends')])
+      .then(([data, mine]) => {
+        if (ignore) return
+        setEvent(data)
+        setFriends(mine.friends)
       })
       .catch((err) => {
         if (ignore) return
@@ -48,14 +51,15 @@ function EventPage({ user }) {
         method: 'POST',
         body: { username: invitee },
         errors: {
-          400: 'Korisnicko ime je obavezno.',
-          403: 'Samo kreator poziva clanove.',
+          400: 'Izaberite prijatelja.',
+          403: 'Mozete pozvati samo svoje prijatelje.',
           404: 'Korisnik ne postoji.',
           409: 'Korisnik je vec clan, vec ima pozivnicu ili je dogadjaj arhiviran.',
         },
       })
       setInvitee('')
       setNotice(`Pozivnica je poslata korisniku ${invitation.invitee}.`)
+      await reload()
     } catch (err) {
       setError(err.message)
     }
@@ -92,6 +96,10 @@ function EventPage({ user }) {
   }
 
   const canInvite = event.creatorId === user.id && !event.archived
+  // Pozvati se mogu samo prijatelji koji nisu clanovi i nemaju pozivnicu na cekanju
+  const invitable = friends.filter(
+    (f) => !event.members.some((m) => m.userId === f.id) && !event.pendingInviteeIds.includes(f.id),
+  )
   const me = event.members.find((m) => m.userId === user.id)
   const consents = event.members.filter((m) => m.archiveConsent).length
 
@@ -129,16 +137,22 @@ function EventPage({ user }) {
 
       {canInvite && (
         <section className="card">
-          <h2>Pozovi clana</h2>
-          <form className="row" onSubmit={handleInvite}>
-            <input
-              aria-label="Korisnicko ime za poziv"
-              placeholder="Korisnicko ime"
-              value={invitee}
-              onChange={(e) => setInvitee(e.target.value)}
-            />
-            <button type="submit">Pozovi</button>
-          </form>
+          <h2>Pozovi prijatelja</h2>
+          {invitable.length === 0 ? (
+            <p>
+              Nema prijatelja za poziv. <Link to="/friends">Dodajte prijatelje</Link>
+            </p>
+          ) : (
+            <form className="row" onSubmit={handleInvite}>
+              <select aria-label="Prijatelj za poziv" value={invitee} onChange={(e) => setInvitee(e.target.value)}>
+                <option value="">Izaberite prijatelja</option>
+                {invitable.map((f) => (
+                  <option key={f.id} value={f.username}>{f.username}</option>
+                ))}
+              </select>
+              <button type="submit" disabled={!invitee}>Pozovi</button>
+            </form>
+          )}
         </section>
       )}
 

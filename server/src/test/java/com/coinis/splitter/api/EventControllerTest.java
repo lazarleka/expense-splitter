@@ -2,6 +2,7 @@ package com.coinis.splitter.api;
 
 import static com.coinis.splitter.TestData.event;
 import static com.coinis.splitter.TestData.expense;
+import static com.coinis.splitter.TestData.invitation;
 import static com.coinis.splitter.TestData.member;
 import static com.coinis.splitter.TestData.user;
 import static org.mockito.Mockito.verify;
@@ -105,10 +106,12 @@ class EventControllerTest {
                 List.of(expense(1, trip, 4000, ana, 2)),
                 4000,
                 List.of(new Transfer(3, 1, 2000))));
+        when(invitationService.pendingForEvent(10)).thenReturn(List.of(invitation(200, trip, user(2, "marko"))));
 
         mvc.perform(get("/api/events/10").with(user(iva)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalCents").value(4000))
+                .andExpect(jsonPath("$.pendingInviteeIds[0]").value(2))
                 .andExpect(jsonPath("$.members[0].username").value("ana"))
                 .andExpect(jsonPath("$.members[0].balanceCents").value(2000))
                 .andExpect(jsonPath("$.members[1].username").value("iva"))

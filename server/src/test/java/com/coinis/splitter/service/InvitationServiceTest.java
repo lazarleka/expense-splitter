@@ -36,11 +36,14 @@ class InvitationServiceTest {
     private final UserRepository users = mock(UserRepository.class);
     private final EventService eventService = new EventService(mock(EventRepository.class), members,
             mock(ExpenseRepository.class), users);
-    private final InvitationService service = new InvitationService(invitations, members, users, eventService);
+    private final FriendService friendService = mock(FriendService.class);
+    private final InvitationService service = new InvitationService(invitations, members, users, eventService,
+            friendService);
 
     private final User ana = user(1, "ana");
     private final User marko = user(2, "marko");
     private final User iva = user(3, "iva");
+    private final User petar = user(4, "petar");
     private final Event trip = event(10, "Izlet", ana);
 
     @BeforeEach
@@ -48,6 +51,10 @@ class InvitationServiceTest {
         when(members.findByEventIdAndUserId(10L, 1L)).thenReturn(Optional.of(member(100, trip, ana)));
         when(users.findByUsername("marko")).thenReturn(Optional.of(marko));
         when(users.findByUsername("iva")).thenReturn(Optional.of(iva));
+        when(users.findByUsername("petar")).thenReturn(Optional.of(petar));
+        // Marko i Iva su Anini prijatelji, Petar nije
+        when(friendService.areFriends(1, 2)).thenReturn(true);
+        when(friendService.areFriends(1, 3)).thenReturn(true);
         when(invitations.save(any(Invitation.class))).thenAnswer(i -> i.getArgument(0));
         when(members.save(any(EventMember.class))).thenAnswer(i -> i.getArgument(0));
     }
@@ -94,6 +101,13 @@ class InvitationServiceTest {
 
         assertStatus(() -> service.invite(10, 1, "iva"), HttpStatus.CONFLICT);
         assertStatus(() -> service.accept(200, 2), HttpStatus.CONFLICT);
+    }
+
+    // Scenarij "Pozivnica": Ana poziva Petra, koji joj nije prijatelj
+    @Test
+    void onlyFriendsCanBeInvited() {
+        assertStatus(() -> service.invite(10, 1, "petar"), HttpStatus.FORBIDDEN);
+        verify(invitations, never()).save(any());
     }
 
     @Test

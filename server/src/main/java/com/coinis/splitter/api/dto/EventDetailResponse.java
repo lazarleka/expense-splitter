@@ -10,6 +10,7 @@ public record EventDetailResponse(
         long creatorId,
         long totalCents,
         List<MemberResponse> members,
+        List<Long> pendingInviteeIds,
         List<ExpenseResponse> expenses,
         List<TransferResponse> transfers) {
 }
