@@ -4,6 +4,9 @@
   --bg: #ffffff;
   --border: #d1d5db;
   --accent: #4f46e5;
+  --table: #f3f4f6;
+  --positive: #047857;
+  --negative: #b42318;
 
   font: 16px/1.5 system-ui, 'Segoe UI', Roboto, sans-serif;
   color-scheme: light dark;
@@ -19,6 +22,9 @@
     --bg: #16171d;
     --border: #2e303a;
     --accent: #818cf8;
+  --table: #22242c;
+  --positive: #34d399;
+  --negative: #f87171;
   }
 }
 
@@ -28,6 +34,9 @@
   --bg: #16171d;
   --border: #2e303a;
   --accent: #818cf8;
+  --table: #22242c;
+  --positive: #34d399;
+  --negative: #f87171;
 }
 
 body {

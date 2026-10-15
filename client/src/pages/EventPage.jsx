@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { api } from '../api.js'
 import ExpenseForm from '../components/ExpenseForm.jsx'
+import RoundTable from '../components/RoundTable.jsx'
 import { formatCents } from '../money.js'
 
 function EventPage({ user }) {
@@ -11,9 +12,15 @@ function EventPage({ user }) {
   const [notFound, setNotFound] = useState(false)
   const [invitee, setInvitee] = useState('')
   const [notice, setNotice] = useState('')
+  const [addingExpense, setAddingExpense] = useState(false)
 
   async function reload() {
     setEvent(await api(`/events/${id}`))
+  }
+
+  async function handleExpenseAdded() {
+    setAddingExpense(false)
+    await reload()
   }
 
   useEffect(() => {
@@ -100,17 +107,29 @@ function EventPage({ user }) {
       {notice && <p className="notice">{notice}</p>}
 
       <section className="card">
-        <h2>Clanovi</h2>
-        <p>Ukupan trosak: <strong>{formatCents(event.totalCents)}</strong></p>
-        <ol>
-          {event.members.map((m) => (
-            <li key={m.userId}>
-              {m.username}: {formatCents(m.balanceCents)}
-              {!event.archived && m.archiveConsent && <small> (saglasan za arhiviranje)</small>}
-            </li>
-          ))}
-        </ol>
-        {canInvite && (
+        <RoundTable
+          members={event.members}
+          totalCents={event.totalCents}
+          currentUserId={user.id}
+          onAdd={event.archived ? null : () => setAddingExpense(true)}
+        />
+        {addingExpense && (
+          <>
+            <h2>Novi trosak</h2>
+            <ExpenseForm
+              eventId={event.id}
+              members={event.members}
+              defaultPayerId={user.id}
+              onAdded={handleExpenseAdded}
+              onCancel={() => setAddingExpense(false)}
+            />
+          </>
+        )}
+      </section>
+
+      {canInvite && (
+        <section className="card">
+          <h2>Pozovi clana</h2>
           <form className="row" onSubmit={handleInvite}>
             <input
               aria-label="Korisnicko ime za poziv"
@@ -120,13 +139,6 @@ function EventPage({ user }) {
             />
             <button type="submit">Pozovi</button>
           </form>
-        )}
-      </section>
-
-      {!event.archived && (
-        <section className="card">
-          <h2>Novi trosak</h2>
-          <ExpenseForm eventId={event.id} members={event.members} defaultPayerId={user.id} onAdded={reload} />
         </section>
       )}
 
