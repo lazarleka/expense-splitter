@@ -34,6 +34,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Zamke pri radu
 - Promjena entiteta ne migrira stare podatke. Posle promjene seme: `docker compose down -v` pa `docker compose up -d`.
 - Ako se promijeni redoslijed upita za clanove, mijenja se rezultat obracuna i raspored za stolom.
+- `open-in-view=false`: kontroleri mapiraju entitete posle zatvorene transakcije. Ne koristiti `getReferenceById` za entitet ciji se podaci citaju u odgovoru (lijeni proxy daje `LazyInitializationException`, tj. 500). Mock testovi to ne hvataju.
 - U `SecurityConfig` je `DispatcherType.ERROR` dozvoljen; bez toga greske iz javnih endpointa (npr. 409 pri registraciji) postaju 401. `@WebMvcTest` to ne hvata, jer MockMvc ne radi error dispatch.
 - Ako Maven pada na SSL gresci (korporativni proxy), koristiti `MAVEN_OPTS="-Djavax.net.ssl.trustStoreType=Windows-ROOT"`. Ne dodavati to u projekat.
 - Claude Code: `.claude/settings.json` dozvoljava testove i lint bez pitanja i zabranjuje citanje `.env` fajlova; `/provjeri` je u `.claude/skills/provjeri`.

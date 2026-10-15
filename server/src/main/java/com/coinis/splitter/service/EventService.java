@@ -42,7 +42,9 @@ public class EventService {
     /** Kreator postaje prvi clan, pa je prvi i po redu ulaska. */
     @Transactional
     public Event create(long creatorId, String name) {
-        User creator = users.getReferenceById(creatorId);
+        // findById, ne getReferenceById: kontroler cita ime kreatora posle transakcije (open-in-view=false)
+        User creator = users.findById(creatorId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Korisnik ne postoji"));
         Event event = events.save(new Event(name.trim(), creator));
         members.save(new EventMember(event, creator));
         return event;

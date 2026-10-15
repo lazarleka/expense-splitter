@@ -44,7 +44,7 @@ class EventServiceTest {
 
     @Test
     void creatorBecomesFirstMember() {
-        when(users.getReferenceById(1L)).thenReturn(ana);
+        when(users.findById(1L)).thenReturn(Optional.of(ana));
         when(events.save(any(Event.class))).thenAnswer(i -> withId(i.<Event>getArgument(0), 10));
 
         Event event = service.create(1, "  Izlet ");
