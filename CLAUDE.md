@@ -4,6 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 @AGENTS.md
 
+> U toku je prelaz sa jedne grupe ucesnika na korisnike, dogadjaje i pozivnice. Dok prelaz traje,
+> SPEC.md i AGENTS.md imaju prednost nad sekcijom Arhitektura ispod, koja opisuje stari kod.
+
 ## Pojedinacni testovi
 - Backend, jedna metoda: `cd server && ./mvnw test -Dtest=SettlementCalculatorTest#lunchAndTaxi` (Windows: `mvnw.cmd`)
 - Frontend, jedan fajl ili naziv: `npm --prefix client test -- money.test.js` ili `cd client && npx vitest run -t "parsira"`
