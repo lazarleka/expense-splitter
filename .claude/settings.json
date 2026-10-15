@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm --prefix client test:*)",
+      "Bash(npm --prefix client run lint:*)",
+      "Bash(cd server && ./mvnw test:*)",
+      "Bash(./mvnw test:*)",
+      "Bash(./mvnw.cmd test:*)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./client/.env)",
+      "Read(./client/.env.*)",
+      "Read(./server/.env)",
+      "Read(./server/.env.*)"
+    ]
+  }
+}
