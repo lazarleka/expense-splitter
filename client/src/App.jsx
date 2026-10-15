@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
 import './App.css'
 import { api, setUnauthorizedHandler } from './api.js'
-import GroupPage from './pages/GroupPage.jsx'
+import EventPage from './pages/EventPage.jsx'
+import EventsPage from './pages/EventsPage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
 
 function App() {
@@ -48,7 +49,8 @@ function App() {
                   </span>
                 </header>
                 <Routes>
-                  <Route path="/" element={<GroupPage />} />
+                  <Route path="/" element={<EventsPage />} />
+                  <Route path="/events/:id" element={<EventPage user={user} />} />
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
               </main>

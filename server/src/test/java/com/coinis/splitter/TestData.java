@@ -1,0 +1,35 @@
+package com.coinis.splitter;
+
+import com.coinis.splitter.model.Event;
+import com.coinis.splitter.model.EventMember;
+import com.coinis.splitter.model.Invitation;
+import com.coinis.splitter.model.User;
+import org.springframework.test.util.ReflectionTestUtils;
+
+/** Entiteti sa id-jevima za testove bez baze (id inace dodjeljuje baza). */
+public final class TestData {
+
+    private TestData() {
+    }
+
+    public static User user(long id, String username) {
+        return withId(new User(username, "hash"), id);
+    }
+
+    public static Event event(long id, String name, User creator) {
+        return withId(new Event(name, creator), id);
+    }
+
+    public static EventMember member(long id, Event event, User user) {
+        return withId(new EventMember(event, user), id);
+    }
+
+    public static Invitation invitation(long id, Event event, User invitee) {
+        return withId(new Invitation(event, invitee), id);
+    }
+
+    public static <T> T withId(T entity, long id) {
+        ReflectionTestUtils.setField(entity, "id", id);
+        return entity;
+    }
+}
