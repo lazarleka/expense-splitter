@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
+import { BrowserRouter, Navigate, NavLink, Route, Routes } from 'react-router'
 import './App.css'
 import { api, setUnauthorizedHandler } from './api.js'
 import EventPage from './pages/EventPage.jsx'
 import EventsPage from './pages/EventsPage.jsx'
+import FriendsPage from './pages/FriendsPage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
 
 function App() {
@@ -48,9 +49,14 @@ function App() {
                     <button type="button" className="link" onClick={handleLogout}>Odjava</button>
                   </span>
                 </header>
+                <nav className="tabs">
+                  <NavLink to="/" end>Dogadjaji</NavLink>
+                  <NavLink to="/friends">Prijatelji</NavLink>
+                </nav>
                 <Routes>
                   <Route path="/" element={<EventsPage />} />
                   <Route path="/events/:id" element={<EventPage user={user} />} />
+                  <Route path="/friends" element={<FriendsPage />} />
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
               </main>

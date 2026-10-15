@@ -213,3 +213,21 @@ button.secondary {
     font-size: 18px;
   }
 }
+
+.tabs {
+  display: flex;
+  gap: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tabs a {
+  padding: 4px 0 8px;
+  color: var(--text);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+}
+
+.tabs a.active {
+  color: var(--text-h);
+  border-bottom-color: var(--accent);
+}
