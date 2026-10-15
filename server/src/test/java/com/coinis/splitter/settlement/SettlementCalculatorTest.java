@@ -14,7 +14,7 @@ class SettlementCalculatorTest {
         // Ana placa rucak 90,00; Marko placa taksi 30,00
         List<Transfer> transfers = SettlementCalculator.calculate(
                 List.of(1L, 2L, 3L),
-                List.of(new Expense(9000, 1L), new Expense(3000, 2L)));
+                List.of(new PaidAmount(9000, 1L), new PaidAmount(3000, 2L)));
 
         assertThat(transfers).containsExactlyInAnyOrder(
                 new Transfer(3L, 1L, 4000),  // Iva duguje Ani 40,00
@@ -26,7 +26,7 @@ class SettlementCalculatorTest {
         // Ana placa 100,00 za troje: udjeli 33,34 + 33,33 + 33,33
         List<Transfer> transfers = SettlementCalculator.calculate(
                 List.of(1L, 2L, 3L),
-                List.of(new Expense(10000, 1L)));
+                List.of(new PaidAmount(10000, 1L)));
 
         assertThat(transfers).containsExactlyInAnyOrder(
                 new Transfer(2L, 1L, 3333),  // Marko duguje Ani 33,33

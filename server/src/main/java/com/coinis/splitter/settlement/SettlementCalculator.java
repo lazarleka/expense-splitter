@@ -16,11 +16,11 @@ public final class SettlementCalculator {
      * @param expenses       svi troskovi grupe
      * @return dugovanja; prazna lista ako nema troskova
      */
-    public static List<Transfer> calculate(List<Long> participantIds, List<Expense> expenses) {
+    public static List<Transfer> calculate(List<Long> participantIds, List<PaidAmount> expenses) {
         int n = participantIds.size();
         long[] balances = new long[n];
 
-        for (Expense expense : expenses) {
+        for (PaidAmount expense : expenses) {
             int payerIndex = participantIds.indexOf(expense.payerId());
             if (payerIndex < 0) {
                 throw new IllegalArgumentException("Platilac nije ucesnik grupe: " + expense.payerId());
