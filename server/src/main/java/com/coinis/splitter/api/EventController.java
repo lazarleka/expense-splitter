@@ -4,16 +4,24 @@ import com.coinis.splitter.api.dto.EventDetailResponse;
 import com.coinis.splitter.api.dto.EventListResponse;
 import com.coinis.splitter.api.dto.EventRequest;
 import com.coinis.splitter.api.dto.EventSummaryResponse;
+import com.coinis.splitter.api.dto.ExpenseRequest;
+import com.coinis.splitter.api.dto.ExpenseResponse;
 import com.coinis.splitter.api.dto.InvitationResponse;
 import com.coinis.splitter.api.dto.InviteRequest;
 import com.coinis.splitter.api.dto.MemberResponse;
+import com.coinis.splitter.api.dto.TransferResponse;
 import com.coinis.splitter.model.Event;
 import com.coinis.splitter.model.EventMember;
+import com.coinis.splitter.model.Expense;
 import com.coinis.splitter.security.AuthUser;
+import com.coinis.splitter.service.EventOverview;
 import com.coinis.splitter.service.EventService;
 import com.coinis.splitter.service.InvitationService;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,12 +60,30 @@ public class EventController {
 
     @GetMapping("/{id}")
     public EventDetailResponse detail(@AuthenticationPrincipal AuthUser user, @PathVariable long id) {
-        Event event = eventService.requireMember(id, user.id()).getEvent();
-        List<MemberResponse> members = eventService.members(id).stream()
-                .map(EventController::toMember)
+        EventOverview overview = eventService.overview(id, user.id());
+        Event event = overview.event();
+        List<EventMember> ordered = overview.members();
+
+        List<MemberResponse> members = IntStream.range(0, ordered.size())
+                .mapToObj(i -> toMember(ordered.get(i), overview.balances()[i]))
                 .toList();
+        Map<Long, String> names = ordered.stream()
+                .collect(Collectors.toMap(m -> m.getUser().getId(), m -> m.getUser().getUsername()));
+        List<TransferResponse> transfers = overview.transfers().stream()
+                .map(t -> new TransferResponse(names.get(t.fromId()), names.get(t.toId()), t.amountCents()))
+                .toList();
+
         return new EventDetailResponse(event.getId(), event.getName(), event.isArchived(),
-                event.getCreator().getId(), members);
+                event.getCreator().getId(), overview.totalCents(), members,
+                overview.expenses().stream().map(EventController::toExpense).toList(), transfers);
+    }
+
+    @PostMapping("/{id}/expenses")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ExpenseResponse addExpense(@AuthenticationPrincipal AuthUser user, @PathVariable long id,
+            @Valid @RequestBody ExpenseRequest request) {
+        return toExpense(eventService.addExpense(id, user.id(), request.title(), request.amountCents(),
+                request.payerId()));
     }
 
     @PostMapping("/{id}/invitations")
@@ -71,7 +97,12 @@ public class EventController {
         return new EventSummaryResponse(e.getId(), e.getName(), e.getCreator().getUsername());
     }
 
-    private static MemberResponse toMember(EventMember m) {
-        return new MemberResponse(m.getUser().getId(), m.getUser().getUsername());
+    private static MemberResponse toMember(EventMember m, long balanceCents) {
+        return new MemberResponse(m.getUser().getId(), m.getUser().getUsername(), balanceCents);
+    }
+
+    private static ExpenseResponse toExpense(Expense e) {
+        return new ExpenseResponse(e.getId(), e.getTitle(), e.getAmountCents(),
+                e.getPayer().getId(), e.getPayer().getUsername());
     }
 }

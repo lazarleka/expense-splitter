@@ -18,6 +18,7 @@ import com.coinis.splitter.model.Invitation;
 import com.coinis.splitter.model.User;
 import com.coinis.splitter.repository.EventMemberRepository;
 import com.coinis.splitter.repository.EventRepository;
+import com.coinis.splitter.repository.ExpenseRepository;
 import com.coinis.splitter.repository.InvitationRepository;
 import com.coinis.splitter.repository.UserRepository;
 import java.util.Optional;
@@ -32,7 +33,8 @@ class InvitationServiceTest {
     private final InvitationRepository invitations = mock(InvitationRepository.class);
     private final EventMemberRepository members = mock(EventMemberRepository.class);
     private final UserRepository users = mock(UserRepository.class);
-    private final EventService eventService = new EventService(mock(EventRepository.class), members, users);
+    private final EventService eventService = new EventService(mock(EventRepository.class), members,
+            mock(ExpenseRepository.class), users);
     private final InvitationService service = new InvitationService(invitations, members, users, eventService);
 
     private final User ana = user(1, "ana");

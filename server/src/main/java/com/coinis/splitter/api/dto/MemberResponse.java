@@ -1,4 +1,5 @@
 package com.coinis.splitter.api.dto;
 
-public record MemberResponse(long userId, String username) {
+/** Stanje u centima: pozitivno potrazuje, negativno duguje. */
+public record MemberResponse(long userId, String username, long balanceCents) {
 }

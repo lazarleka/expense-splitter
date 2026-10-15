@@ -2,6 +2,7 @@ package com.coinis.splitter;
 
 import com.coinis.splitter.model.Event;
 import com.coinis.splitter.model.EventMember;
+import com.coinis.splitter.model.Expense;
 import com.coinis.splitter.model.Invitation;
 import com.coinis.splitter.model.User;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -22,6 +23,10 @@ public final class TestData {
 
     public static EventMember member(long id, Event event, User user) {
         return withId(new EventMember(event, user), id);
+    }
+
+    public static Expense expense(long id, Event event, long amountCents, User payer, int memberCount) {
+        return withId(new Expense(event, "Trosak " + id, amountCents, payer, memberCount), id);
     }
 
     public static Invitation invitation(long id, Event event, User invitee) {

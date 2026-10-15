@@ -17,6 +17,10 @@ public class Expense {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "event_id", nullable = false)
+    private Event event;
+
     @Column(nullable = false, length = 100)
     private String title;
 
@@ -26,19 +30,30 @@ public class Expense {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "payer_id", nullable = false)
-    private Participant payer;
+    private User payer;
+
+    // Broj clanova u trenutku unosa: trosak dijele prvih memberCount clanova po redu ulaska.
+    // Radi samo dok clan ne moze izaci iz dogadjaja; izlazak bi trazio listu clanova po trosku.
+    @Column(name = "member_count", nullable = false)
+    private int memberCount;
 
     protected Expense() {
     }
 
-    public Expense(String title, long amountCents, Participant payer) {
+    public Expense(Event event, String title, long amountCents, User payer, int memberCount) {
+        this.event = event;
         this.title = title;
         this.amountCents = amountCents;
         this.payer = payer;
+        this.memberCount = memberCount;
     }
 
     public Long getId() {
         return id;
+    }
+
+    public Event getEvent() {
+        return event;
     }
 
     public String getTitle() {
@@ -49,7 +64,11 @@ public class Expense {
         return amountCents;
     }
 
-    public Participant getPayer() {
+    public User getPayer() {
         return payer;
+    }
+
+    public int getMemberCount() {
+        return memberCount;
     }
 }

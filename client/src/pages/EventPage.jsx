@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { api } from '../api.js'
+import ExpenseForm from '../components/ExpenseForm.jsx'
+import { formatCents } from '../money.js'
 
 function EventPage({ user }) {
   const { id } = useParams()
@@ -9,6 +11,10 @@ function EventPage({ user }) {
   const [notFound, setNotFound] = useState(false)
   const [invitee, setInvitee] = useState('')
   const [notice, setNotice] = useState('')
+
+  async function reload() {
+    setEvent(await api(`/events/${id}`))
+  }
 
   useEffect(() => {
     let ignore = false
@@ -76,9 +82,12 @@ function EventPage({ user }) {
 
       <section className="card">
         <h2>Clanovi</h2>
+        <p>Ukupan trosak: <strong>{formatCents(event.totalCents)}</strong></p>
         <ol>
           {event.members.map((m) => (
-            <li key={m.userId}>{m.username}</li>
+            <li key={m.userId}>
+              {m.username}: {formatCents(m.balanceCents)}
+            </li>
           ))}
         </ol>
         {canInvite && (
@@ -91,6 +100,43 @@ function EventPage({ user }) {
             />
             <button type="submit">Pozovi</button>
           </form>
+        )}
+      </section>
+
+      {!event.archived && (
+        <section className="card">
+          <h2>Novi trosak</h2>
+          <ExpenseForm eventId={event.id} members={event.members} defaultPayerId={user.id} onAdded={reload} />
+        </section>
+      )}
+
+      <section className="card">
+        <h2>Troskovi</h2>
+        {event.expenses.length === 0 ? (
+          <p>Nema troskova.</p>
+        ) : (
+          <ul>
+            {event.expenses.map((e) => (
+              <li key={e.id}>
+                {e.title}: {formatCents(e.amountCents)} ({e.payerName} platio)
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section className="card">
+        <h2>Ko kome duguje</h2>
+        {event.transfers.length === 0 ? (
+          <p>Nema dugovanja.</p>
+        ) : (
+          <ul>
+            {event.transfers.map((t, i) => (
+              <li key={i}>
+                {t.from} duguje {t.to}: {formatCents(t.amountCents)}
+              </li>
+            ))}
+          </ul>
         )}
       </section>
     </>

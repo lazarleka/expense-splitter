@@ -8,5 +8,8 @@ public record EventDetailResponse(
         String name,
         boolean archived,
         long creatorId,
-        List<MemberResponse> members) {
+        long totalCents,
+        List<MemberResponse> members,
+        List<ExpenseResponse> expenses,
+        List<TransferResponse> transfers) {
 }
