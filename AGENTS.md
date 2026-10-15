@@ -1,7 +1,7 @@
 # AGENTS.md
 
 ## Projekat
-Expense Splitter: korisnici se prijavljuju, prave dogadjaje, pozivaju druge i dijele troskove.
+Expense Splitter: korisnici se prijavljuju, dodaju prijatelje, prave dogadjaje, pozivaju prijatelje i dijele troskove.
 Zahtjevi su u SPEC.md.
 
 ## Stack i struktura
@@ -29,6 +29,8 @@ Zahtjevi su u SPEC.md.
 - Korisnik se uvijek uzima iz sesije, nikad iz tijela ili parametra zahtjeva
 - Lozinke se hashuju (BCrypt) i nikad se ne vracaju u odgovoru niti ispisuju u log
 - Arhiviran dogadjaj odbija svaku izmjenu (409)
+- U dogadjaj se poziva samo prijatelj kreatora; prijateljstvo je samo prihvacen zahtjev, u bilo kom smjeru
+- Avatar je kljuc iz fiksnog skupa (enum Avatar na serveru); klijent ga prikazuje preko client/src/avatars.js
 - Svaki scenarij iz SPEC.md ima svoj test
 - Pokreni /provjeri prije nego sto kazes da je zadatak gotov i prije commita
 - Jedna funkcionalnost = jedan commit, poruka u formatu tipa: "feat: ...", "fix: ...", "chore: ..."
