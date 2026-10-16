@@ -5,11 +5,6 @@
 const round = (value) => Math.round(value * 100) / 100
 
 /**
- * @param count broj clanova
- * @param radius poluprecnik kruga mjesta u procentima sirine kontejnera
- * @returns [{ left, top }] u procentima, centar mjesta
- */
-/**
  * Smjer mjesta u stepenima (-90 = gore, 0 = desno, 90 = dole), isti redoslijed kao seatPositions.
  * Koristi se da se stolica i tanjir okrenu prema centru stola.
  */
@@ -17,6 +12,11 @@ export function seatAngle(index, count) {
   return round(-90 + (360 * index) / count)
 }
 
+/**
+ * @param count broj clanova
+ * @param radius poluprecnik kruga mjesta u procentima sirine kontejnera
+ * @returns [{ left, top }] u procentima, centar mjesta
+ */
 export function seatPositions(count, radius = 42) {
   return Array.from({ length: count }, (_, i) => {
     const angle = -Math.PI / 2 + (2 * Math.PI * i) / count
