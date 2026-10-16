@@ -422,6 +422,13 @@ ul.plain {
 .user-menu-head { display: flex; align-items: center; gap: 12px; padding: 10px 8px 16px; }
 .user-menu-head > div { min-width: 0; }
 .user-menu-head strong { display: block; overflow-wrap: anywhere; color: var(--text-h); }
+/* Zbir duga i potrazivanja iz aktivnih dogadjaja, dvije kolone ispod imena */
+.user-menu-balance { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 8px; margin: 0 4px 8px; padding: 10px 12px; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--border); }
+.user-menu-balance > div { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.user-menu-balance strong { font-size: 17px; color: var(--text-h); font-variant-numeric: tabular-nums; }
+.user-menu-balance strong.negative { color: var(--negative); }
+.user-menu-balance strong.positive { color: var(--positive); }
+.user-menu-balance-note { grid-column: 1 / -1; }
 .user-menu-item {
   display: flex;
   align-items: center;

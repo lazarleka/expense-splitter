@@ -25,6 +25,9 @@
 - Korisnik kreira dogadjaj sa nazivom (obavezan). Kreator automatski postaje prvi clan.
 - Korisnik vidi samo dogadjaje u kojima je clan.
 - Za svaki dogadjaj lista prikazuje ukupan trosak, broj clanova i stanje prijavljenog korisnika.
+- U meniju korisnika vidi ukupno koliko duguje i koliko njemu duguju, sabrano po aktivnim dogadjajima.
+  Dug i potrazivanje se sabiraju odvojeno (dug u jednom dogadjaju ne umanjuje potrazivanje u drugom);
+  arhivirani dogadjaji se ne racunaju.
 
 ### 4. Pozivnice
 - Kreator dogadjaja poziva nove ucesnike samo sa svoje liste prijatelja.
@@ -94,6 +97,11 @@
 ### Pregled svih korisnika
 - Ana na stranici prijatelja vidi sve ostale korisnike, ukljucujuci korisnike poslije osmog po redu.
 - Ana ne vidi sebe, a uz svakog korisnika vidi trenutni odnos i odgovarajucu akciju.
+
+### Pregled stanja u meniju
+- Ana: "Rucak i taksi" (aktivan) +50,00; "Izlet" (aktivan) -11,00; "Ljetovanje" (arhiviran) -20,00
+- Rezultat: Ana duguje ukupno 11,00; Ani duguju ukupno 50,00
+- Bez aktivnih dogadjaja: oba iznosa su 0,00
 
 ### Pozivnica
 - Marko i Iva su Anini prijatelji
