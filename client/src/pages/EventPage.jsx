@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router'
+import { Link, useParams, useSearchParams } from 'react-router'
 import { api } from '../api.js'
 import ExpenseForm from '../components/ExpenseForm.jsx'
 import RoundTable from '../components/RoundTable.jsx'
@@ -7,12 +7,14 @@ import { formatCents } from '../money.js'
 
 function EventPage({ user }) {
   const { id } = useParams()
+  const [searchParams] = useSearchParams()
   const [event, setEvent] = useState(null)
   const [error, setError] = useState('')
   const [notFound, setNotFound] = useState(false)
   const [invitee, setInvitee] = useState('')
   const [notice, setNotice] = useState('')
-  const [addingExpense, setAddingExpense] = useState(false)
+  // Dugme "+" sa kartice na pocetnoj otvara formu odmah (?dodaj=1)
+  const [addingExpense, setAddingExpense] = useState(searchParams.get('dodaj') === '1')
   const [friends, setFriends] = useState([])
 
   async function reload() {

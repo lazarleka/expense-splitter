@@ -1,28 +1,42 @@
+/* ---------- Osnova ---------- */
+
 .app {
-  max-width: 560px;
+  max-width: 1120px;
   margin: 0 auto;
-  padding: 24px 16px;
+  padding: 24px 16px 48px;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-h1 {
-  margin: 8px 0 0;
-  font-size: 28px;
-  text-align: center;
+/* Stranice koje jos nisu redizajnirane ostaju uske i citljive */
+.narrow {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+h1,
+h2,
+h3 {
+  color: var(--text-h);
+  line-height: 1.25;
 }
 
 .card {
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius);
   padding: 16px;
-  background: var(--bg);
+  background: var(--surface);
+  box-shadow: var(--shadow);
 }
 
 .card h2 {
   margin: 0 0 12px;
-  font-size: 18px;
+  font-size: 17px;
 }
 
 .card ul {
@@ -40,12 +54,18 @@ h1 {
   flex-direction: column;
 }
 
+.muted {
+  color: var(--muted);
+}
+
+/* ---------- Kontrole ---------- */
+
 input,
 select,
 button {
   font: inherit;
-  padding: 8px 10px;
-  border-radius: 6px;
+  padding: 9px 12px;
+  border-radius: 8px;
   border: 1px solid var(--border);
 }
 
@@ -53,15 +73,28 @@ input,
 select {
   flex: 1;
   min-width: 0;
-  background: var(--bg);
+  background: var(--surface-2);
   color: var(--text-h);
 }
 
+input:focus,
+select:focus,
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
 button {
-  background: var(--accent);
-  color: #fff;
+  background: var(--primary);
+  color: var(--on-primary);
   border-color: transparent;
+  font-weight: 500;
   cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  background: var(--primary-hover);
 }
 
 button:disabled {
@@ -69,32 +102,27 @@ button:disabled {
   cursor: not-allowed;
 }
 
-.error {
-  color: #b42318;
-  background: #fef3f2;
-  border: 1px solid #fecdca;
-  border-radius: 6px;
-  padding: 8px 12px;
+button.secondary {
+  background: transparent;
+  color: var(--text-h);
+  border-color: var(--border);
 }
 
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.topbar h1 {
-  margin: 0;
-  text-align: left;
+button.secondary:hover:not(:disabled) {
+  background: var(--surface-2);
 }
 
 button.link {
   background: none;
   border: none;
   padding: 0;
-  color: var(--accent);
+  color: var(--primary);
+  font-weight: 400;
   text-decoration: underline;
+}
+
+button.link:hover:not(:disabled) {
+  background: none;
 }
 
 .row.between {
@@ -110,19 +138,374 @@ ul.plain {
   gap: 8px;
 }
 
-button.secondary {
-  background: none;
-  color: var(--text-h);
-  border-color: var(--border);
-}
-
-.notice {
-  border: 1px solid var(--border);
-  border-radius: 6px;
+.error {
+  margin: 0;
+  color: var(--negative);
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+  border-radius: 8px;
   padding: 8px 12px;
 }
 
-/* Okrugli sto: kvadratni kontejner, mjesta su centrirana na procentima iz tableLayout.js */
+.notice {
+  margin: 0;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.positive {
+  color: var(--positive);
+}
+
+.negative {
+  color: var(--negative);
+}
+
+/* ---------- Zaglavlje ---------- */
+
+.topbar {
+  background: var(--header);
+  color: var(--on-header);
+}
+
+.topbar-inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 16px;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.brand {
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--on-header);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+
+.tabs a {
+  padding: 6px 12px;
+  border-radius: 8px;
+  color: var(--on-header);
+  opacity: 0.75;
+  text-decoration: none;
+}
+
+.tabs a:hover {
+  opacity: 1;
+}
+
+.tabs a.active {
+  opacity: 1;
+  background: rgb(255 255 255 / 12%);
+}
+
+.topbar-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  white-space: nowrap;
+}
+
+.topbar-user button.link {
+  color: var(--on-header);
+}
+
+/* ---------- Pocetna: grid ---------- */
+
+.home {
+  display: grid;
+  grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.home-side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.home-main {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 4px 0 0;
+}
+
+.section-head h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.count {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  border-radius: 999px;
+  padding: 1px 9px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.event-grid.compact {
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+/* Cijela kartica vodi na dogadjaj (link preko kartice); dugme "+" je iznad tog sloja */
+.event-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: border-color 0.15s, transform 0.15s;
+}
+
+.event-card:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.event-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.event-card-title {
+  color: var(--text-h);
+  font-weight: 600;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.event-card-title::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+}
+
+.event-card-total {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text-h);
+  margin-top: 6px;
+}
+
+.event-card-meta {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.event-card-balance {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.event-card.archived {
+  box-shadow: none;
+  background: var(--surface-2);
+  padding: 12px;
+}
+
+.event-card.archived .event-card-total {
+  font-size: 16px;
+  margin-top: 0;
+}
+
+.event-card.archived:hover {
+  transform: none;
+}
+
+.add-button {
+  position: relative;
+  z-index: 1;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.add-button:hover {
+  filter: brightness(1.05);
+}
+
+.empty {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.invitation {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 0;
+  border-top: 1px solid var(--border);
+}
+
+.invitation:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+
+@media (max-width: 760px) {
+  .home {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .topbar-inner {
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    padding: 10px 16px;
+  }
+
+  .tabs {
+    order: 3;
+    flex-basis: 100%;
+  }
+}
+
+/* ---------- Landing (prijava) ---------- */
+
+.landing {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+}
+
+.landing-hero {
+  background: var(--header);
+  color: var(--on-header);
+  padding: 64px 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+}
+
+.landing-hero .brand {
+  font-size: 20px;
+}
+
+.landing-hero h1 {
+  margin: 0;
+  font-size: 40px;
+  color: #ffffff;
+  max-width: 14em;
+}
+
+.landing-hero p {
+  margin: 0;
+  font-size: 18px;
+  max-width: 32em;
+  opacity: 0.9;
+}
+
+.features {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.features li {
+  background: rgb(255 255 255 / 8%);
+  border: 1px solid rgb(255 255 255 / 14%);
+  border-radius: var(--radius);
+  padding: 14px;
+  font-size: 14px;
+}
+
+.features strong {
+  display: block;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+
+.landing-form-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+}
+
+.landing-form {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 28px;
+}
+
+.landing-form h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+@media (max-width: 860px) {
+  .landing {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .landing-hero {
+    padding: 40px 16px;
+  }
+
+  .landing-hero h1 {
+    font-size: 30px;
+  }
+
+  .landing-form-wrap {
+    padding: 24px 16px 48px;
+  }
+}
+
+/* ---------- Okrugli sto ---------- */
+
+/* Kvadratni kontejner, mjesta su centrirana na procentima iz tableLayout.js */
 .round-table {
   position: relative;
   width: min(100%, 420px);
@@ -159,6 +542,13 @@ button.secondary {
   border-radius: 50%;
   font-size: 26px;
   line-height: 1;
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.table-add:hover:not(:disabled) {
+  background: var(--accent);
+  filter: brightness(1.05);
 }
 
 .seat {
@@ -168,7 +558,7 @@ button.secondary {
   padding: 6px 4px;
   border-radius: 12px;
   border: 1px solid var(--border);
-  background: var(--bg);
+  background: var(--surface);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -177,7 +567,7 @@ button.secondary {
 }
 
 .seat.me {
-  border-color: var(--accent);
+  border-color: var(--primary);
   border-width: 2px;
 }
 
@@ -212,22 +602,4 @@ button.secondary {
   .table-total {
     font-size: 18px;
   }
-}
-
-.tabs {
-  display: flex;
-  gap: 16px;
-  border-bottom: 1px solid var(--border);
-}
-
-.tabs a {
-  padding: 4px 0 8px;
-  color: var(--text);
-  text-decoration: none;
-  border-bottom: 2px solid transparent;
-}
-
-.tabs a.active {
-  color: var(--text-h);
-  border-bottom-color: var(--accent);
 }

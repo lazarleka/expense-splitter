@@ -80,6 +80,22 @@ class EventServiceTest {
         assertThat(overview.transfers()).containsExactly(new Transfer(2, 1, 1000), new Transfer(3, 1, 4000));
     }
 
+    // Lista na pocetnoj: ukupan trosak, broj clanova i stanje korisnika (Iva u "Rucak i taksi")
+    @Test
+    void cardShowsTotalMembersAndMyBalance() {
+        givenMembers(ana, marko, iva);
+        when(members.findAllByUserIdOrderByIdAsc(3L)).thenReturn(List.of(member(102, trip, iva)));
+        when(expenses.findAllByEventIdOrderByIdAsc(10L)).thenReturn(List.of(
+                expense(1, trip, 9000, ana, 3), expense(2, trip, 3000, marko, 3)));
+
+        EventCard card = service.cards(3).get(0);
+
+        assertThat(card.event()).isEqualTo(trip);
+        assertThat(card.memberCount()).isEqualTo(3);
+        assertThat(card.totalCents()).isEqualTo(12000);
+        assertThat(card.myBalanceCents()).isEqualTo(-4000);
+    }
+
     // Scenarij "Kasniji clan": trosak pamti koliko je clanova bilo u trenutku unosa
     @Test
     void expenseRemembersMembersAtTimeOfEntry() {

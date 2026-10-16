@@ -1,12 +1,29 @@
+/* Paleta "Morska": petrolej plava za glavne akcije, zlatni akcent za dugme "+",
+   svijetla morska pozadina sa bijelim karticama i tamno petrolej zaglavlje. */
 :root {
-  --text: #4b5563;
-  --text-h: #111827;
-  --bg: #ffffff;
-  --border: #d1d5db;
-  --accent: #4f46e5;
-  --table: #f3f4f6;
-  --positive: #047857;
-  --negative: #b42318;
+  --bg: #eaf3f5;
+  --surface: #ffffff;
+  --surface-2: #f3f8f9;
+  --text: #475569;
+  --text-h: #0f172a;
+  --muted: #64748b;
+  --border: #d3e2e6;
+  --primary: #0e7490;
+  --primary-hover: #0b5f76;
+  --on-primary: #ffffff;
+  --accent: #f59e0b;
+  --on-accent: #1f1300;
+  --accent-soft: #fef3c7;
+  --accent-ink: #92400e;
+  --header: #0b3c49;
+  --on-header: #e6f4f6;
+  --table: #dceef1;
+  --positive: #15803d;
+  --negative: #b91c1c;
+  --danger-bg: #fef2f2;
+  --danger-border: #fecaca;
+  --shadow: 0 1px 2px rgb(11 60 73 / 6%), 0 4px 14px rgb(11 60 73 / 7%);
+  --radius: 12px;
 
   font: 16px/1.5 system-ui, 'Segoe UI', Roboto, sans-serif;
   color-scheme: light dark;
@@ -17,30 +34,66 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --accent: #818cf8;
-  --table: #22242c;
-  --positive: #34d399;
-  --negative: #f87171;
+    --bg: #0a1a20;
+    --surface: #10262e;
+    --surface-2: #0d2028;
+    --text: #a9bec6;
+    --text-h: #e6f1f4;
+    --muted: #7f98a1;
+    --border: #1f3b45;
+    --primary: #22b8d1;
+    --primary-hover: #4fc9dd;
+    --on-primary: #04232b;
+    --accent: #fbbf24;
+    --on-accent: #1f1300;
+    --accent-soft: #3a2a07;
+    --accent-ink: #fcd34d;
+    --header: #061a21;
+    --on-header: #cfe7ec;
+    --table: #15323b;
+    --positive: #4ade80;
+    --negative: #f87171;
+    --danger-bg: #3b1214;
+    --danger-border: #7f1d1d;
+    --shadow: 0 1px 2px rgb(0 0 0 / 30%), 0 4px 14px rgb(0 0 0 / 25%);
   }
 }
 
 :root[data-theme="dark"] {
-  --text: #9ca3af;
-  --text-h: #f3f4f6;
-  --bg: #16171d;
-  --border: #2e303a;
-  --accent: #818cf8;
-  --table: #22242c;
-  --positive: #34d399;
+  --bg: #0a1a20;
+  --surface: #10262e;
+  --surface-2: #0d2028;
+  --text: #a9bec6;
+  --text-h: #e6f1f4;
+  --muted: #7f98a1;
+  --border: #1f3b45;
+  --primary: #22b8d1;
+  --primary-hover: #4fc9dd;
+  --on-primary: #04232b;
+  --accent: #fbbf24;
+  --on-accent: #1f1300;
+  --accent-soft: #3a2a07;
+  --accent-ink: #fcd34d;
+  --header: #061a21;
+  --on-header: #cfe7ec;
+  --table: #15323b;
+  --positive: #4ade80;
   --negative: #f87171;
+  --danger-bg: #3b1214;
+  --danger-border: #7f1d1d;
+  --shadow: 0 1px 2px rgb(0 0 0 / 30%), 0 4px 14px rgb(0 0 0 / 25%);
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
+}
+
+a {
+  color: var(--primary);
 }

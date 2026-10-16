@@ -15,6 +15,7 @@ import com.coinis.splitter.model.Event;
 import com.coinis.splitter.model.EventMember;
 import com.coinis.splitter.model.Expense;
 import com.coinis.splitter.security.AuthUser;
+import com.coinis.splitter.service.EventCard;
 import com.coinis.splitter.service.EventOverview;
 import com.coinis.splitter.service.EventService;
 import com.coinis.splitter.service.InvitationService;
@@ -48,16 +49,17 @@ public class EventController {
 
     @GetMapping
     public EventListResponse list(@AuthenticationPrincipal AuthUser user) {
-        List<Event> mine = eventService.eventsOf(user.id());
+        List<EventCard> mine = eventService.cards(user.id());
         return new EventListResponse(
-                mine.stream().filter(e -> !e.isArchived()).map(EventController::toSummary).toList(),
-                mine.stream().filter(Event::isArchived).map(EventController::toSummary).toList());
+                mine.stream().filter(c -> !c.event().isArchived()).map(EventController::toSummary).toList(),
+                mine.stream().filter(c -> c.event().isArchived()).map(EventController::toSummary).toList());
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public EventSummaryResponse create(@AuthenticationPrincipal AuthUser user, @Valid @RequestBody EventRequest request) {
-        return toSummary(eventService.create(user.id(), request.name()));
+        // Novi dogadjaj ima samo kreatora i nema troskova
+        return toSummary(new EventCard(eventService.create(user.id(), request.name()), 1, 0, 0));
     }
 
     @GetMapping("/{id}")
@@ -107,8 +109,10 @@ public class EventController {
         return InvitationController.toResponse(invitationService.invite(id, user.id(), request.username()));
     }
 
-    private static EventSummaryResponse toSummary(Event e) {
-        return new EventSummaryResponse(e.getId(), e.getName(), e.getCreator().getUsername());
+    private static EventSummaryResponse toSummary(EventCard c) {
+        Event e = c.event();
+        return new EventSummaryResponse(e.getId(), e.getName(), e.getCreator().getUsername(),
+                c.memberCount(), c.totalCents(), c.myBalanceCents());
     }
 
     private static MemberResponse toMember(EventMember m, long balanceCents) {

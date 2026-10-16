@@ -19,6 +19,7 @@
 - Posle prijave korisnik vidi tri liste: pozivnice na cekanju, aktivni dogadjaji i arhivirani dogadjaji.
 - Korisnik kreira dogadjaj sa nazivom (obavezan). Kreator automatski postaje prvi clan.
 - Korisnik vidi samo dogadjaje u kojima je clan.
+- Za svaki dogadjaj lista prikazuje ukupan trosak, broj clanova i stanje prijavljenog korisnika.
 
 ### 4. Pozivnice
 - Kreator dogadjaja poziva nove ucesnike samo sa svoje liste prijatelja.

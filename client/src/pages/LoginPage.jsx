@@ -40,35 +40,48 @@ function LoginPage({ onLogin }) {
   }
 
   return (
-    <main className="app">
-      <h1>Expense Splitter</h1>
-
-      {error && <p className="error" role="alert">{error}</p>}
-
-      <section className="card">
-        <h2>{isRegister ? 'Registracija' : 'Prijava'}</h2>
-        <form className="stack" onSubmit={handleSubmit}>
-          <input
-            aria-label="Korisnicko ime"
-            placeholder="Korisnicko ime"
-            autoComplete="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-          <input
-            aria-label="Lozinka"
-            placeholder="Lozinka"
-            type="password"
-            autoComplete={isRegister ? 'new-password' : 'current-password'}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <button type="submit">{isRegister ? 'Registruj se' : 'Prijavi se'}</button>
-        </form>
-        <button type="button" className="link" onClick={switchMode}>
-          {isRegister ? 'Vec imate nalog? Prijavite se' : 'Nemate nalog? Registrujte se'}
-        </button>
+    <main className="landing">
+      <section className="landing-hero">
+        <span className="brand">Expense Splitter</span>
+        <h1>Podijelite troskove bez racunanja na salveti.</h1>
+        <p>
+          Napravite dogadjaj, pozovite prijatelje i upisite ko je sta platio. Aplikacija racuna ko kome
+          duguje, tacno do centa.
+        </p>
+        <ul className="features">
+          <li><strong>Okrugli sto</strong>Svaki clan sjedi za stolom sa svojim stanjem.</li>
+          <li><strong>Do centa</strong>Iznosi se racunaju u centima, bez gresaka zaokruzivanja.</li>
+          <li><strong>Zajednicko arhiviranje</strong>Dogadjaj se zatvara tek kad se svi sloze.</li>
+        </ul>
       </section>
+
+      <div className="landing-form-wrap">
+        <section className="card landing-form">
+          <h2>{isRegister ? 'Napravite nalog' : 'Prijavite se'}</h2>
+          {error && <p className="error" role="alert">{error}</p>}
+          <form className="stack" onSubmit={handleSubmit}>
+            <input
+              aria-label="Korisnicko ime"
+              placeholder="Korisnicko ime"
+              autoComplete="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <input
+              aria-label="Lozinka"
+              placeholder="Lozinka"
+              type="password"
+              autoComplete={isRegister ? 'new-password' : 'current-password'}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button type="submit">{isRegister ? 'Registruj se' : 'Prijavi se'}</button>
+          </form>
+          <button type="button" className="link" onClick={switchMode}>
+            {isRegister ? 'Vec imate nalog? Prijavite se' : 'Nemate nalog? Registrujte se'}
+          </button>
+        </section>
+      </div>
     </main>
   )
 }

@@ -39,6 +39,23 @@ public class EventService {
                 .toList();
     }
 
+    /**
+     * Dogadjaji korisnika sa ukupnim troskom, brojem clanova i njegovim stanjem.
+     * Racuna obracun za svaki dogadjaj posebno; nema kesiranja.
+     */
+    public List<EventCard> cards(long userId) {
+        return eventsOf(userId).stream()
+                .map(e -> {
+                    EventOverview o = overview(e.getId(), userId);
+                    int me = 0;
+                    while (!o.members().get(me).getUser().getId().equals(userId)) {
+                        me++;
+                    }
+                    return new EventCard(e, o.members().size(), o.totalCents(), o.balances()[me]);
+                })
+                .toList();
+    }
+
     /** Kreator postaje prvi clan, pa je prvi i po redu ulaska. */
     @Transactional
     public Event create(long creatorId, String name) {

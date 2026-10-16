@@ -20,6 +20,7 @@ import com.coinis.splitter.model.User;
 import com.coinis.splitter.repository.UserRepository;
 import com.coinis.splitter.security.AuthUser;
 import com.coinis.splitter.security.SecurityConfig;
+import com.coinis.splitter.service.EventCard;
 import com.coinis.splitter.service.EventOverview;
 import com.coinis.splitter.service.EventService;
 import com.coinis.splitter.settlement.Transfer;
@@ -87,11 +88,15 @@ class EventControllerTest {
         Event active = event(10, "Izlet", ana);
         Event archived = event(11, "Rodjendan", ana);
         archived.archive();
-        when(eventService.eventsOf(3)).thenReturn(List.of(active, archived));
+        when(eventService.cards(3)).thenReturn(List.of(
+                new EventCard(active, 3, 12000, -4000), new EventCard(archived, 2, 500, 0)));
 
         mvc.perform(get("/api/events").with(user(iva)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.active[0].name").value("Izlet"))
+                .andExpect(jsonPath("$.active[0].memberCount").value(3))
+                .andExpect(jsonPath("$.active[0].totalCents").value(12000))
+                .andExpect(jsonPath("$.active[0].myBalanceCents").value(-4000))
                 .andExpect(jsonPath("$.archived[0].name").value("Rodjendan"));
     }
 
