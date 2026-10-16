@@ -47,6 +47,23 @@ export function LogoutIcon(props) {
   )
 }
 
+// Plus kao ikonica, ne kao znak "+": znak zavisi od metrike fonta i nikad nije tacno u centru kruga
+export function PlusIcon(props) {
+  return (
+    <Svg strokeWidth="2.6" {...props}>
+      <path d="M12 5v14M5 12h14" />
+    </Svg>
+  )
+}
+
+export function ChevronLeftIcon(props) {
+  return (
+    <Svg {...props}>
+      <path d="m15 18-6-6 6-6" />
+    </Svg>
+  )
+}
+
 export function UsersIcon(props) {
   return (
     <Svg {...props}>

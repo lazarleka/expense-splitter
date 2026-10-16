@@ -18,6 +18,14 @@
   --header: #0b3c49;
   --on-header: #e6f4f6;
   --table: #dceef1;
+  /* Sto: petrolej stolnjak, svijetle stolice, tepih u nijansi pozadine */
+  --cloth: #0f6175;
+  --cloth-light: #1a7d94;
+  --cloth-dark: #0a4352;
+  --chair: #ffffff;
+  --chair-back: #2f6875;
+  --rug: #d6e9ed;
+  --plate: #ffffff;
   --positive: #15803d;
   --negative: #b91c1c;
   --danger-bg: #fef2f2;
@@ -51,6 +59,13 @@
     --header: #061a21;
     --on-header: #cfe7ec;
     --table: #15323b;
+    --cloth: #0e5363;
+    --cloth-light: #146a7e;
+    --cloth-dark: #07313c;
+    --chair: #183842;
+    --chair-back: #4f8c99;
+    --rug: #102a33;
+    --plate: #e4edef;
     --positive: #4ade80;
     --negative: #f87171;
     --danger-bg: #3b1214;
@@ -77,6 +92,13 @@
   --header: #061a21;
   --on-header: #cfe7ec;
   --table: #15323b;
+  --cloth: #0e5363;
+  --cloth-light: #146a7e;
+  --cloth-dark: #07313c;
+  --chair: #183842;
+  --chair-back: #4f8c99;
+  --rug: #102a33;
+  --plate: #e4edef;
   --positive: #4ade80;
   --negative: #f87171;
   --danger-bg: #3b1214;

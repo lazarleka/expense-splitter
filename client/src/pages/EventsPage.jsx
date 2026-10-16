@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { api } from '../api.js'
+import { PlusIcon } from '../components/Icons.jsx'
 import { formatCents } from '../money.js'
 
 function fetchEvents() {
@@ -34,7 +35,7 @@ function EventCard({ event }) {
           aria-label={`Dodaj trosak u ${event.name}`}
           title="Dodaj trosak"
         >
-          +
+          <PlusIcon size={18} />
         </Link>
       </div>
       <div className="event-card-total">{formatCents(event.totalCents)}</div>

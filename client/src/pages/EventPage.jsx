@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router'
 import { api } from '../api.js'
 import ExpenseForm from '../components/ExpenseForm.jsx'
+import { ChevronLeftIcon } from '../components/Icons.jsx'
 import RoundTable from '../components/RoundTable.jsx'
 import { formatCents } from '../money.js'
 
@@ -163,7 +164,10 @@ function EventPage({ user }) {
   return (
     <div className="event-page">
       <div className="event-page-header">
-        <Link to="/" className="event-back">&larr; Dogadjaji</Link>
+        <Link to="/" className="event-back">
+          <ChevronLeftIcon size={18} />
+          Svi dogadjaji
+        </Link>
         <div className="event-heading">
           <h1>{event.name}</h1>
         </div>
@@ -221,13 +225,20 @@ function EventPage({ user }) {
             )}
           </section>
 
+          {/* Arhiviranje kao uska traka ispod troskova: ko je saglasan i dugme desno */}
           {!event.archived && me && (
-            <section className="card event-detail-card archive-card">
-              <div className="archive-head">
-                <h2>Arhiviranje</h2>
-                <span className="muted small-text">{consents}/{event.members.length} saglasnih</span>
+            <section className="card archive-bar" aria-label="Arhiviranje">
+              <div className="archive-bar-info">
+                <div className="archive-bar-title">
+                  <h2>Arhiviranje</h2>
+                  <span className="count">{consents}/{event.members.length}</span>
+                </div>
+                <span className="muted small-text">
+                  {consents === 0
+                    ? 'Dogadjaj se arhivira kad svi clanovi daju saglasnost.'
+                    : `Saglasni: ${event.members.filter((m) => m.archiveConsent).map((m) => m.username).join(', ')}`}
+                </span>
               </div>
-              <p className="muted small-text">Dogadjaj se arhivira kad svi clanovi daju saglasnost.</p>
               <button type="button" className={me.archiveConsent ? 'secondary' : ''}
                 onClick={() => handleConsent(!me.archiveConsent)}>
                 {me.archiveConsent ? 'Povuci saglasnost' : 'Saglasan sam'}
