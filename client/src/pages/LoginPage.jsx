@@ -41,21 +41,23 @@ function LoginPage({ onLogin }) {
 
   return (
     <main className="landing">
-      <section className="landing-hero">
-        <span className="brand">Expense Splitter</span>
-        <h1>Podijelite troskove bez racunanja na salveti.</h1>
-        <p>
-          Napravite dogadjaj, pozovite prijatelje i upisite ko je sta platio. Aplikacija racuna ko kome
-          duguje, tacno do centa.
-        </p>
-        <ul className="features">
-          <li><strong>Okrugli sto</strong>Svaki clan sjedi za stolom sa svojim stanjem.</li>
-          <li><strong>Do centa</strong>Iznosi se racunaju u centima, bez gresaka zaokruzivanja.</li>
-          <li><strong>Zajednicko arhiviranje</strong>Dogadjaj se zatvara tek kad se svi sloze.</li>
-        </ul>
-      </section>
+      <header className="topbar">
+        <div className="topbar-inner">
+          <span className="brand">Expense Splitter</span>
+        </div>
+      </header>
 
-      <div className="landing-form-wrap">
+      {/* Uvod i forma su u istom gridu, centrirani jedno naspram drugog; prednosti su red ispod */}
+      <div className="landing-body">
+        <section className="landing-intro">
+          <span className="eyebrow">Troskovi u drustvu, bez svadje</span>
+          <h1>Podijelite troskove bez racunanja na salveti.</h1>
+          <p>
+            Napravite dogadjaj, pozovite prijatelje i upisite ko je sta platio. Aplikacija racuna ko kome
+            duguje, tacno do centa.
+          </p>
+        </section>
+
         <section className="card landing-form">
           <h2>{isRegister ? 'Napravite nalog' : 'Prijavite se'}</h2>
           {error && <p className="error" role="alert">{error}</p>}
@@ -81,6 +83,12 @@ function LoginPage({ onLogin }) {
             {isRegister ? 'Vec imate nalog? Prijavite se' : 'Nemate nalog? Registrujte se'}
           </button>
         </section>
+
+        <ul className="features">
+          <li><strong>Okrugli sto</strong>Svaki clan sjedi za stolom sa svojim stanjem.</li>
+          <li><strong>Do centa</strong>Iznosi se racunaju u centima, bez gresaka zaokruzivanja.</li>
+          <li><strong>Zajednicko arhiviranje</strong>Dogadjaj se zatvara tek kad se svi sloze.</li>
+        </ul>
       </div>
     </main>
   )

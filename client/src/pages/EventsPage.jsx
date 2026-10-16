@@ -51,9 +51,12 @@ function EventCard({ event }) {
 function ArchivedCard({ event }) {
   return (
     <article className="card event-card archived">
-      <Link to={`/events/${event.id}`} className="event-card-title">{event.name}</Link>
+      <div className="event-card-head">
+        <Link to={`/events/${event.id}`} className="event-card-title">{event.name}</Link>
+      </div>
       <div className="event-card-total">{formatCents(event.totalCents)}</div>
       <div className="event-card-meta">{membersLabel(event.memberCount)}</div>
+      <div className="event-card-balance muted">Arhiviran dogadjaj</div>
     </article>
   )
 }
@@ -64,6 +67,19 @@ function EventsPage() {
   const [events, setEvents] = useState({ active: [], archived: [] })
   const [name, setName] = useState('')
   const [error, setError] = useState('')
+  const [selectedTab, setSelectedTab] = useState('active')
+
+  function handleTabKeyDown(event) {
+    const tabs = ['active', 'archived']
+    const index = tabs.indexOf(selectedTab)
+    const next = event.key === 'ArrowRight' ? (index + 1) % tabs.length
+      : event.key === 'ArrowLeft' ? (index + tabs.length - 1) % tabs.length
+        : event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : -1
+    if (next < 0) return
+    event.preventDefault()
+    setSelectedTab(tabs[next])
+    event.currentTarget.parentElement.querySelectorAll('[role="tab"]')[next].focus()
+  }
 
   function apply([pending, mine]) {
     setInvitations(pending)
@@ -157,36 +173,40 @@ function EventsPage() {
         </section>
       </aside>
 
-      <div className="home-main">
+      <section className="card home-main" aria-label="Vasi dogadjaji">
         {error && <p className="error" role="alert">{error}</p>}
 
-        <div className="section-head">
-          <h2>Aktivni dogadjaji</h2>
-          {events.active.length > 0 && <span className="count">{events.active.length}</span>}
+        <div className="event-tabs" role="tablist" aria-label="Vrsta dogadjaja">
+          <button type="button" id="active-events-tab" role="tab" aria-controls="active-events-panel"
+            aria-selected={selectedTab === 'active'} tabIndex={selectedTab === 'active' ? 0 : -1}
+            onClick={() => setSelectedTab('active')} onKeyDown={handleTabKeyDown}>
+            Aktivni dogadjaji <span className="count">{events.active.length}</span>
+          </button>
+          <button type="button" id="archived-events-tab" role="tab" aria-controls="archived-events-panel"
+            aria-selected={selectedTab === 'archived'} tabIndex={selectedTab === 'archived' ? 0 : -1}
+            onClick={() => setSelectedTab('archived')} onKeyDown={handleTabKeyDown}>
+            Arhivirani <span className="count">{events.archived.length}</span>
+          </button>
         </div>
-        {events.active.length === 0 ? (
-          <p className="empty">Nemate aktivnih dogadjaja. Kreirajte prvi u polju lijevo.</p>
-        ) : (
-          <div className="event-grid">
-            {events.active.map((e) => (
-              <EventCard key={e.id} event={e} />
-            ))}
-          </div>
-        )}
-
-        {events.archived.length > 0 && (
-          <>
-            <div className="section-head">
-              <h2>Arhivirani</h2>
+        <div id="active-events-panel" role="tabpanel" aria-labelledby="active-events-tab" hidden={selectedTab !== 'active'}>
+          {events.active.length === 0 ? (
+            <p className="empty">Nemate aktivnih dogadjaja. Kreirajte prvi u polju lijevo.</p>
+          ) : (
+            <div className="event-grid">
+              {events.active.map((e) => <EventCard key={e.id} event={e} />)}
             </div>
+          )}
+        </div>
+        <div id="archived-events-panel" role="tabpanel" aria-labelledby="archived-events-tab" hidden={selectedTab !== 'archived'}>
+          {events.archived.length === 0 ? (
+            <p className="empty">Jos nemate arhiviranih dogadjaja.</p>
+          ) : (
             <div className="event-grid compact">
-              {events.archived.map((e) => (
-                <ArchivedCard key={e.id} event={e} />
-              ))}
+              {events.archived.map((e) => <ArchivedCard key={e.id} event={e} />)}
             </div>
-          </>
-        )}
-      </div>
+          )}
+        </div>
+      </section>
     </div>
   )
 }

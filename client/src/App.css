@@ -188,40 +188,6 @@ ul.plain {
   white-space: nowrap;
 }
 
-.tabs {
-  display: flex;
-  gap: 4px;
-  flex: 1;
-}
-
-.tabs a {
-  padding: 6px 12px;
-  border-radius: 8px;
-  color: var(--on-header);
-  opacity: 0.75;
-  text-decoration: none;
-}
-
-.tabs a:hover {
-  opacity: 1;
-}
-
-.tabs a.active {
-  opacity: 1;
-  background: rgb(255 255 255 / 12%);
-}
-
-.topbar-user {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  white-space: nowrap;
-}
-
-.topbar-user button.link {
-  color: var(--on-header);
-}
-
 /* ---------- Pocetna: grid ---------- */
 
 .home {
@@ -240,7 +206,40 @@ ul.plain {
 .home-main {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
+}
+
+.event-tabs {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--border);
+}
+
+.event-tabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  padding: 0 0 12px;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 17px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.event-tabs button:hover:not(:disabled) {
+  background: transparent;
+  color: var(--primary);
+}
+
+.event-tabs button[aria-selected="true"] {
+  border-bottom-color: var(--primary);
+  color: var(--text-h);
 }
 
 .section-head {
@@ -271,8 +270,8 @@ ul.plain {
 }
 
 .event-grid.compact {
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
 }
 
 /* Cijela kartica vodi na dogadjaj (link preko kartice); dugme "+" je iznad tog sloja */
@@ -281,6 +280,8 @@ ul.plain {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-height: 174px;
+  background: var(--bg);
   transition: border-color 0.15s, transform 0.15s;
 }
 
@@ -323,25 +324,10 @@ ul.plain {
 }
 
 .event-card-balance {
-  margin-top: 8px;
+  margin-top: auto;
   padding-top: 8px;
   border-top: 1px solid var(--border);
   font-size: 14px;
-}
-
-.event-card.archived {
-  box-shadow: none;
-  background: var(--surface-2);
-  padding: 12px;
-}
-
-.event-card.archived .event-card-total {
-  font-size: 16px;
-  margin-top: 0;
-}
-
-.event-card.archived:hover {
-  transform: none;
 }
 
 .add-button {
@@ -399,110 +385,151 @@ ul.plain {
     padding: 10px 16px;
   }
 
-  .tabs {
-    order: 3;
-    flex-basis: 100%;
-  }
 }
+
+/* ---------- Profil i padajuci meni ---------- */
+
+.topbar { position: relative; z-index: 10; }
+.topbar-inner > .user-menu { margin-left: auto; }
+.user-menu { position: relative; min-width: 0; }
+.user-menu-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 240px;
+  padding: 5px 10px 5px 5px;
+  border: 1px solid rgb(255 255 255 / 22%);
+  background: rgb(255 255 255 / 8%);
+  color: var(--on-header);
+  border-radius: 999px;
+}
+.user-menu-button:hover:not(:disabled),
+.user-menu-button[aria-expanded="true"] { background: rgb(255 255 255 / 16%); }
+.user-menu-avatar {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 12%);
+  flex-shrink: 0;
+}
+.user-menu-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
+.user-menu-chevron { flex-shrink: 0; transition: transform 0.15s; }
+.user-menu-button[aria-expanded="true"] .user-menu-chevron { transform: rotate(180deg); }
+.user-menu-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 12px);
+  width: min(280px, calc(100vw - 32px));
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 16px 40px rgb(0 0 0 / 18%);
+}
+.user-menu-head { display: flex; align-items: center; gap: 12px; padding: 10px 8px 16px; }
+.user-menu-head > div { min-width: 0; }
+.user-menu-head strong { display: block; overflow-wrap: anywhere; color: var(--text-h); }
+.user-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 12px;
+  border: 0;
+  border-radius: 8px;
+  text-decoration: none;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 500;
+  background: transparent;
+  color: var(--text-h);
+}
+.user-menu-item:hover, .user-menu-item.active { background: var(--surface-2); color: var(--primary); }
+.user-menu-divider { height: 1px; background: var(--border); margin: 6px 4px; }
+.user-menu-item.danger { color: var(--negative); }
+.user-menu-item.danger:hover:not(:disabled) { background: var(--danger-bg); }
 
 /* ---------- Landing (prijava) ---------- */
 
-.landing {
-  min-height: 100vh;
+.landing { min-height: 100svh; }
+.landing-body {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 72px 24px 48px;
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-}
-
-.landing-hero {
-  background: var(--header);
-  color: var(--on-header);
-  padding: 64px 48px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 20px;
-}
-
-.landing-hero .brand {
-  font-size: 20px;
-}
-
-.landing-hero h1 {
-  margin: 0;
-  font-size: 40px;
-  color: #ffffff;
-  max-width: 14em;
-}
-
-.landing-hero p {
-  margin: 0;
-  font-size: 18px;
-  max-width: 32em;
-  opacity: 0.9;
-}
-
-.features {
-  list-style: none;
-  padding: 0;
-  margin: 8px 0 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 12px;
-}
-
-.features li {
-  background: rgb(255 255 255 / 8%);
-  border: 1px solid rgb(255 255 255 / 14%);
-  border-radius: var(--radius);
-  padding: 14px;
-  font-size: 14px;
-}
-
-.features strong {
-  display: block;
-  color: var(--accent);
-  margin-bottom: 4px;
-}
-
-.landing-form-wrap {
-  display: flex;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.85fr);
   align-items: center;
-  justify-content: center;
-  padding: 48px 24px;
+  gap: 56px 64px;
 }
+.eyebrow { color: var(--primary); font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.landing-intro h1 { font-size: clamp(32px, 4vw, 48px); letter-spacing: -0.04em; margin: 16px 0 20px; }
+.landing-intro p { font-size: 18px; line-height: 1.7; margin: 0; max-width: 34em; }
+.landing-form { width: 100%; padding: 32px; display: flex; flex-direction: column; gap: 20px; }
+.landing-form h2 { margin: 0; font-size: 24px; }
+.landing-form .stack { gap: 14px; }
+.landing-form input, .landing-form button[type="submit"] { min-height: 46px; }
+.landing-form button.link { font-size: 14px; line-height: 1.6; }
+.features { grid-column: 1 / -1; list-style: none; padding: 28px 0 0; margin: 0; border-top: 1px solid var(--border); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
+.features li { font-size: 14px; line-height: 1.7; }
+.features strong { display: block; color: var(--text-h); font-size: 16px; margin-bottom: 6px; }
 
-.landing-form {
-  width: 100%;
-  max-width: 380px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 28px;
-}
+/* ---------- Prijatelji ---------- */
 
-.landing-form h2 {
-  margin: 0;
-  font-size: 24px;
-}
+.friends { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 24px; align-items: start; }
+.friends-side, .friends-main { min-width: 0; display: flex; flex-direction: column; gap: 20px; }
+.friends-side .card { padding: 20px; }
+.small-text { font-size: 12px; }
+button.small { padding: 6px 10px; font-size: 13px; }
+.person-icon { width: 36px; height: 36px; flex-shrink: 0; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: var(--primary); background: var(--surface-2); border: 1px solid var(--border); }
+.person-icon.large { width: 48px; height: 48px; }
+.person { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+.person:last-child { border-bottom: 0; padding-bottom: 0; }
+.person-name { flex: 1; min-width: 60px; overflow-wrap: anywhere; color: var(--text-h); font-weight: 500; font-size: 14px; }
+.person-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px; margin-left: auto; }
+.search-field { display: flex; gap: 8px; align-items: center; padding: 0 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-2); color: var(--muted); }
+.search-field > svg { flex-shrink: 0; }
+.search-field input { width: 100%; border: 0; padding: 10px 0; background: transparent; font-size: 14px; }
+.search-field:focus-within { outline: 2px solid var(--primary); outline-offset: 2px; }
+.search-field input:focus { outline: none; }
+.search-results { margin-top: 12px; border-top: 1px solid var(--border); }
+.tag { display: inline-block; border-radius: 999px; padding: 4px 8px; font-size: 12px; background: var(--surface-2); color: var(--positive); }
+.muted-tag { color: var(--muted); }
+.highlight { border-color: var(--primary); }
+.section-head.between { align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.row.center { align-items: center; }
+.filter { width: 160px; flex: 0 1 160px; font-size: 14px; }
+.friend-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 180px), 1fr)); gap: 16px; }
+.friend-card { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; padding: 24px 16px; }
+.friend-card strong { color: var(--text-h); max-width: 100%; overflow-wrap: anywhere; }
+.empty { margin: 0; }
+.home-side, .home-main { min-width: 0; }
+.event-grid, .event-grid.compact { grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); }
 
 @media (max-width: 860px) {
-  .landing {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .landing-hero {
-    padding: 40px 16px;
-  }
-
-  .landing-hero h1 {
-    font-size: 30px;
-  }
-
-  .landing-form-wrap {
-    padding: 24px 16px 48px;
-  }
+  .landing-body { padding: 40px 20px; gap: 32px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .landing-form { padding: 24px; }
+  .friends { grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 20px; }
 }
-
+@media (max-width: 760px) {
+  .friends, .landing-body { grid-template-columns: minmax(0, 1fr); }
+  .landing-form { max-width: 480px; justify-self: center; }
+  .features { gap: 20px; }
+  .user-menu-button { max-width: 180px; }
+}
+@media (max-width: 480px) {
+  .user-menu-name { display: none; }
+  .topbar-inner { gap: 8px; }
+  .features { grid-template-columns: minmax(0, 1fr); }
+  .landing-body { padding: 32px 16px; }
+  .landing-intro p { font-size: 16px; }
+  .app { padding-top: 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .user-menu-chevron, .event-card { transition: none; }
+}
 /* ---------- Okrugli sto ---------- */
 
 /* Kvadratni kontejner, mjesta su centrirana na procentima iz tableLayout.js */

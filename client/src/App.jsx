@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { BrowserRouter, Link, Navigate, NavLink, Route, Routes } from 'react-router'
+import { BrowserRouter, Link, Navigate, Route, Routes } from 'react-router'
 import './App.css'
 import { api, setUnauthorizedHandler } from './api.js'
+import UserMenu from './components/UserMenu.jsx'
 import EventPage from './pages/EventPage.jsx'
 import EventsPage from './pages/EventsPage.jsx'
 import FriendsPage from './pages/FriendsPage.jsx'
@@ -45,21 +46,14 @@ function App() {
                 <header className="topbar">
                   <div className="topbar-inner">
                     <Link to="/" className="brand">Expense Splitter</Link>
-                    <nav className="tabs">
-                      <NavLink to="/" end>Dogadjaji</NavLink>
-                      <NavLink to="/friends">Prijatelji</NavLink>
-                    </nav>
-                    <span className="topbar-user">
-                      {user.username}
-                      <button type="button" className="link" onClick={handleLogout}>Odjava</button>
-                    </span>
+                    <UserMenu username={user.username} onLogout={handleLogout} />
                   </div>
                 </header>
                 <main className="app">
                   <Routes>
                     <Route path="/" element={<EventsPage />} />
                     <Route path="/events/:id" element={<div className="narrow"><EventPage user={user} /></div>} />
-                    <Route path="/friends" element={<div className="narrow"><FriendsPage /></div>} />
+                    <Route path="/friends" element={<FriendsPage />} />
                     <Route path="*" element={<Navigate to="/" replace />} />
                   </Routes>
                 </main>

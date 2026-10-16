@@ -131,4 +131,58 @@ class FriendServiceTest {
 
         assertThat(service.friends(1)).containsExactly(iva, marko);
     }
+
+    // Scenarij "Pretraga i povlacenje zahtjeva": rezultati nose odnos prema Ani
+    @Test
+    void searchShowsRelationToSearcher() {
+        User petar = user(4, "petar");
+        User darko = user(5, "darko");
+        Friendship withMarko = friendship(10, ana, marko);
+        withMarko.accept();
+        when(friendships.findAllInvolving(1L, Friendship.Status.ACCEPTED)).thenReturn(List.of(withMarko));
+        when(friendships.findAllInvolving(1L, Friendship.Status.PENDING)).thenReturn(List.of(
+                friendship(11, ana, petar), friendship(12, darko, ana)));
+        when(users.findTop8ByUsernameContainingIgnoreCaseAndIdNotOrderByUsernameAsc("ar", 1L))
+                .thenReturn(List.of(darko, marko, petar, iva));
+
+        List<UserSearchResult> results = service.search(1, " ar ");
+
+        assertThat(results).extracting(UserSearchResult::relation).containsExactly(
+                UserSearchResult.Relation.INCOMING, UserSearchResult.Relation.FRIEND,
+                UserSearchResult.Relation.OUTGOING, UserSearchResult.Relation.NONE);
+        assertThat(results).extracting(UserSearchResult::requestId).containsExactly(12L, null, 11L, null);
+    }
+
+    // Scenarij "Pretraga i povlacenje zahtjeva": kratak upit ne pretrazuje bazu
+    @Test
+    void shortQueryReturnsNothing() {
+        assertThat(service.search(1, "a")).isEmpty();
+        assertThat(service.search(1, "  ")).isEmpty();
+        assertThat(service.search(1, null)).isEmpty();
+        verify(users, never()).findTop8ByUsernameContainingIgnoreCaseAndIdNotOrderByUsernameAsc(any(), any());
+    }
+
+    // Scenarij "Pretraga i povlacenje zahtjeva": Ana povlaci svoj zahtjev
+    @Test
+    void senderCancelsPendingRequest() {
+        Friendship toMarko = friendship(10, ana, marko);
+        when(friendships.findById(10L)).thenReturn(Optional.of(toMarko));
+
+        service.cancel(10, 1);
+
+        verify(friendships).delete(toMarko);
+    }
+
+    // Scenarij "Pretraga i povlacenje zahtjeva": primalac ne moze povuci tudji zahtjev
+    @Test
+    void onlySenderCancelsAndOnlyWhilePending() {
+        Friendship toMarko = friendship(10, ana, marko);
+        when(friendships.findById(10L)).thenReturn(Optional.of(toMarko));
+
+        assertStatus(() -> service.cancel(10, 2), HttpStatus.NOT_FOUND);
+
+        toMarko.accept();
+        assertStatus(() -> service.cancel(10, 1), HttpStatus.NOT_FOUND);
+        verify(friendships, never()).delete(any());
+    }
 }

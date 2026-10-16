@@ -16,6 +16,7 @@ import com.coinis.splitter.repository.UserRepository;
 import com.coinis.splitter.security.AuthUser;
 import com.coinis.splitter.security.SecurityConfig;
 import com.coinis.splitter.service.FriendService;
+import com.coinis.splitter.service.UserSearchResult;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,6 +69,30 @@ class FriendControllerTest {
                 .andExpect(jsonPath("$.incoming[0].id").value(20))
                 .andExpect(jsonPath("$.incoming[0].user.username").value("iva"))
                 .andExpect(jsonPath("$.outgoing[0].user.username").value("petar"));
+    }
+
+    @Test
+    void searchReturnsUsersWithRelation() throws Exception {
+        when(friendService.search(1, "mar")).thenReturn(List.of(
+                new UserSearchResult(user(2, "marko"), UserSearchResult.Relation.OUTGOING, 21L)));
+
+        mvc.perform(get("/api/friends/search").param("q", "mar").with(user(ana)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].username").value("marko"))
+                .andExpect(jsonPath("$[0].relation").value("OUTGOING"))
+                .andExpect(jsonPath("$[0].requestId").value(21));
+    }
+
+    @Test
+    void searchWithoutLoginIsUnauthorized() throws Exception {
+        mvc.perform(get("/api/friends/search").param("q", "mar")).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void cancelIsPassedToServiceForLoggedInUser() throws Exception {
+        mvc.perform(post("/api/friends/requests/21/cancel").with(user(ana)).with(csrf()))
+                .andExpect(status().isNoContent());
+        verify(friendService).cancel(21, 1);
     }
 
     @Test

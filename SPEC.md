@@ -14,6 +14,9 @@
 - Ne moze se poslati zahtjev sebi, nepostojecem korisniku, postojecem prijatelju
   ni kad izmedju njih vec postoji zahtjev na cekanju (u bilo kom smjeru).
 - Korisnik vidi listu prijatelja, primljene zahtjeve na cekanju i poslate zahtjeve na cekanju.
+- Korisnik trazi druge korisnike po dijelu imena (najmanje 2 znaka, do 8 rezultata). Uz svaki rezultat
+  vidi odnos: nije prijatelj, prijatelj, zahtjev poslat ili zahtjev primljen.
+- Posiljalac moze povuci zahtjev dok jos ceka odgovor.
 
 ### 3. Dogadjaji
 - Posle prijave korisnik vidi tri liste: pozivnice na cekanju, aktivni dogadjaji i arhivirani dogadjaji.
@@ -77,6 +80,12 @@
 - Ana ponovo salje zahtjev Ivi: zahtjev je prihvacen kao novi
 - Marko salje zahtjev Ani: odbijeno, vec su prijatelji
 - Ana salje zahtjev Ivi dok joj Iva vec ima zahtjev na cekanju: odbijeno
+
+### Pretraga i povlacenje zahtjeva
+- Ana trazi "ar": vidi Marka kao prijatelja, a sebe ne vidi u rezultatima
+- Upit kraci od 2 znaka ne vraca rezultate
+- Ana posalje zahtjev Petru, pa ga povuce: Petar vise nema zahtjev, a Ana mu moze poslati novi
+- Petar ne moze povuci Anin zahtjev (moze ga samo prihvatiti ili odbiti)
 
 ### Pozivnica
 - Marko i Iva su Anini prijatelji
