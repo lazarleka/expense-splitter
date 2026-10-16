@@ -55,6 +55,8 @@
 - Clanovi sjede za okruglim stolom, ravnomjerno rasporedjeni po krugu, po redu ulaska.
 - Svako mjesto prikazuje ime clana i njegovo stanje.
 - U sredini stola su ukupan trosak dogadjaja i dugme "+" za unos novog troska.
+- Kreator aktivnog dogadjaja vidi dodatno slobodno mjesto sa "+"; klik otvara listu njegovih prijatelja
+  koje moze pozvati u dogadjaj.
 - Ispod stola je lista dugovanja (ko kome duguje).
 
 ## Scenariji

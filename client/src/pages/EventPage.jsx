@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router'
 import { api } from '../api.js'
 import ExpenseForm from '../components/ExpenseForm.jsx'
@@ -11,11 +11,16 @@ function EventPage({ user }) {
   const [event, setEvent] = useState(null)
   const [error, setError] = useState('')
   const [notFound, setNotFound] = useState(false)
-  const [invitee, setInvitee] = useState('')
   const [notice, setNotice] = useState('')
-  // Dugme "+" sa kartice na pocetnoj otvara formu odmah (?dodaj=1)
   const [addingExpense, setAddingExpense] = useState(searchParams.get('dodaj') === '1')
+  const [inviteOpen, setInviteOpen] = useState(false)
+  const [inviteError, setInviteError] = useState('')
+  const [inviting, setInviting] = useState(false)
   const [friends, setFriends] = useState([])
+  const inviteButtonRef = useRef(null)
+  const expenseButtonRef = useRef(null)
+  const inviteDialogRef = useRef(null)
+  const expenseDialogRef = useRef(null)
 
   async function reload() {
     setEvent(await api(`/events/${id}`))
@@ -24,6 +29,7 @@ function EventPage({ user }) {
   async function handleExpenseAdded() {
     setAddingExpense(false)
     await reload()
+    expenseButtonRef.current?.focus()
   }
 
   useEffect(() => {
@@ -44,14 +50,62 @@ function EventPage({ user }) {
     }
   }, [id])
 
-  async function handleInvite(e) {
-    e.preventDefault()
-    setError('')
+  useEffect(() => {
+    if (!inviteOpen && !addingExpense) return undefined
+    function onKeyDown(e) {
+      if (e.key === 'Escape') {
+        if (inviteOpen) closeInvite()
+        else closeExpense()
+      }
+      if (e.key === 'Tab') {
+        const dialog = inviteOpen ? inviteDialogRef.current : expenseDialogRef.current
+        const focusable = [...(dialog?.querySelectorAll('a[href], button:not(:disabled), input, select') ?? [])]
+        if (focusable.length === 0) return
+        const first = focusable[0]
+        const last = focusable.at(-1)
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault()
+          last.focus()
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault()
+          first.focus()
+        }
+      }
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [inviteOpen, addingExpense])
+
+  useEffect(() => {
+    if (!inviteOpen && !addingExpense) return undefined
+    const dialog = inviteOpen ? inviteDialogRef.current : expenseDialogRef.current
+    const frame = requestAnimationFrame(() => dialog?.querySelector('button, input')?.focus())
+    return () => cancelAnimationFrame(frame)
+  }, [inviteOpen, addingExpense])
+
+  function openInvite() {
+    setInviteError('')
+    setInviteOpen(true)
+  }
+
+  function closeInvite() {
+    setInviteOpen(false)
+    inviteButtonRef.current?.focus()
+  }
+
+  function closeExpense() {
+    setAddingExpense(false)
+    expenseButtonRef.current?.focus()
+  }
+
+  async function handleInvite(username) {
+    setInviteError('')
     setNotice('')
+    setInviting(true)
     try {
       const invitation = await api(`/events/${id}/invitations`, {
         method: 'POST',
-        body: { username: invitee },
+        body: { username },
         errors: {
           400: 'Izaberite prijatelja.',
           403: 'Mozete pozvati samo svoje prijatelje.',
@@ -59,11 +113,13 @@ function EventPage({ user }) {
           409: 'Korisnik je vec clan, vec ima pozivnicu ili je dogadjaj arhiviran.',
         },
       })
-      setInvitee('')
       setNotice(`Pozivnica je poslata korisniku ${invitation.invitee}.`)
       await reload()
+      closeInvite()
     } catch (err) {
-      setError(err.message)
+      setInviteError(err.message)
+    } finally {
+      setInviting(false)
     }
   }
 
@@ -98,7 +154,6 @@ function EventPage({ user }) {
   }
 
   const canInvite = event.creatorId === user.id && !event.archived
-  // Pozvati se mogu samo prijatelji koji nisu clanovi i nemaju pozivnicu na cekanju
   const invitable = friends.filter(
     (f) => !event.members.some((m) => m.userId === f.id) && !event.pendingInviteeIds.includes(f.id),
   )
@@ -106,105 +161,127 @@ function EventPage({ user }) {
   const consents = event.members.filter((m) => m.archiveConsent).length
 
   return (
-    <>
-      <Link to="/">&larr; Dogadjaji</Link>
-      <h2>
-        {event.name}
-        {event.archived && <small> (arhiviran)</small>}
-      </h2>
+    <div className="event-page">
+      <div className="event-page-header">
+        <Link to="/" className="event-back">&larr; Dogadjaji</Link>
+        <div className="event-heading">
+          <h1>{event.name}</h1>
+          <span className={`event-status${event.archived ? ' archived' : ''}`}>
+            {event.archived ? 'Arhiviran' : 'Aktivan'}
+          </span>
+        </div>
+      </div>
 
       {error && <p className="error" role="alert">{error}</p>}
-      {notice && <p className="notice">{notice}</p>}
+      {notice && <p className="notice" role="status">{notice}</p>}
 
-      <section className="card">
-        <RoundTable
-          members={event.members}
-          totalCents={event.totalCents}
-          currentUserId={user.id}
-          onAdd={event.archived ? null : () => setAddingExpense(true)}
-        />
-        {addingExpense && (
-          <>
-            <h2>Novi trosak</h2>
-            <ExpenseForm
-              eventId={event.id}
-              members={event.members}
-              defaultPayerId={user.id}
-              onAdded={handleExpenseAdded}
-              onCancel={() => setAddingExpense(false)}
-            />
-          </>
-        )}
-      </section>
+      <div className="event-dashboard">
+        <section className="card event-table-card" aria-label="Sto dogadjaja">
+          <RoundTable
+            members={event.members}
+            totalCents={event.totalCents}
+            currentUserId={user.id}
+            onAdd={event.archived ? null : () => setAddingExpense(true)}
+            onInvite={canInvite ? openInvite : null}
+            inviteButtonRef={inviteButtonRef}
+            expenseButtonRef={expenseButtonRef}
+          />
+        </section>
 
-      {canInvite && (
-        <section className="card">
-          <h2>Pozovi prijatelja</h2>
-          {invitable.length === 0 ? (
-            <p>
-              Nema prijatelja za poziv. <Link to="/friends">Dodajte prijatelje</Link>
-            </p>
-          ) : (
-            <form className="row" onSubmit={handleInvite}>
-              <select aria-label="Prijatelj za poziv" value={invitee} onChange={(e) => setInvitee(e.target.value)}>
-                <option value="">Izaberite prijatelja</option>
-                {invitable.map((f) => (
-                  <option key={f.id} value={f.username}>{f.username}</option>
+        <div className="event-details">
+          <section className="card event-detail-card">
+            <h2>Ko kome duguje</h2>
+            {event.transfers.length === 0 ? (
+              <p className="muted">Nema dugovanja.</p>
+            ) : (
+              <ul className="event-detail-list">
+                {event.transfers.map((t, i) => (
+                  <li key={i}>
+                    <span><strong>{t.from}</strong> duguje {t.to}</span>
+                    <strong>{formatCents(t.amountCents)}</strong>
+                  </li>
                 ))}
-              </select>
-              <button type="submit" disabled={!invitee}>Pozovi</button>
-            </form>
+              </ul>
+            )}
+          </section>
+
+          <section className="card event-detail-card">
+            <h2>Troskovi <span className="count">{event.expenses.length}</span></h2>
+            {event.expenses.length === 0 ? (
+              <p className="muted">Nema troskova.</p>
+            ) : (
+              <ul className="event-detail-list">
+                {event.expenses.map((expense) => (
+                  <li key={expense.id}>
+                    <span><strong>{expense.title}</strong><small>{expense.payerName} platio</small></span>
+                    <strong>{formatCents(expense.amountCents)}</strong>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
+          {!event.archived && me && (
+            <section className="card event-detail-card archive-card">
+              <div className="archive-head">
+                <h2>Arhiviranje</h2>
+                <span className="muted small-text">{consents}/{event.members.length} saglasnih</span>
+              </div>
+              <p className="muted small-text">Dogadjaj se arhivira kad svi clanovi daju saglasnost.</p>
+              <button type="button" className={me.archiveConsent ? 'secondary' : ''}
+                onClick={() => handleConsent(!me.archiveConsent)}>
+                {me.archiveConsent ? 'Povuci saglasnost' : 'Saglasan sam'}
+              </button>
+            </section>
           )}
-        </section>
+        </div>
+      </div>
+
+      {inviteOpen && (
+        <div className="event-modal-backdrop" onMouseDown={(e) => { if (e.target === e.currentTarget) closeInvite() }}>
+          <section ref={inviteDialogRef} className="card event-modal" role="dialog" aria-modal="true"
+            aria-labelledby="invite-title">
+            <div className="event-modal-head">
+              <div>
+                <span className="muted small-text">Slobodno mjesto za stolom</span>
+                <h2 id="invite-title">Pozovi prijatelja</h2>
+              </div>
+              <button type="button" className="secondary modal-close" aria-label="Zatvori" onClick={closeInvite}>
+                &times;
+              </button>
+            </div>
+            {inviteError && <p className="error" role="alert">{inviteError}</p>}
+            {invitable.length === 0 ? (
+              <p className="muted">Nema prijatelja za poziv. <Link to="/friends">Pronadjite prijatelje</Link>.</p>
+            ) : (
+              <div className="invite-list">
+                {invitable.map((friend) => (
+                  <button key={friend.id} type="button" className="invite-option"
+                    disabled={inviting} onClick={() => handleInvite(friend.username)}>
+                    <span>{friend.username}</span><span>Pozovi &rarr;</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
       )}
 
-      {!event.archived && me && (
-        <section className="card">
-          <h2>Arhiviranje</h2>
-          <p>
-            Saglasno {consents} od {event.members.length} clanova. Dogadjaj se arhivira kad su svi saglasni,
-            a novi trosak ili novi clan ponistava saglasnosti.
-          </p>
-          {me.archiveConsent ? (
-            <button type="button" className="secondary" onClick={() => handleConsent(false)}>
-              Povuci saglasnost
-            </button>
-          ) : (
-            <button type="button" onClick={() => handleConsent(true)}>Saglasan sam sa arhiviranjem</button>
-          )}
-        </section>
+      {addingExpense && !event.archived && (
+        <div className="event-modal-backdrop" onMouseDown={(e) => { if (e.target === e.currentTarget) closeExpense() }}>
+          <section ref={expenseDialogRef} className="card event-modal" role="dialog" aria-modal="true"
+            aria-labelledby="expense-title">
+            <div className="event-modal-head">
+              <h2 id="expense-title">Novi trosak</h2>
+              <button type="button" className="secondary modal-close" aria-label="Zatvori"
+                onClick={closeExpense}>&times;</button>
+            </div>
+            <ExpenseForm eventId={event.id} members={event.members} defaultPayerId={user.id}
+              onAdded={handleExpenseAdded} onCancel={closeExpense} />
+          </section>
+        </div>
       )}
-
-      <section className="card">
-        <h2>Troskovi</h2>
-        {event.expenses.length === 0 ? (
-          <p>Nema troskova.</p>
-        ) : (
-          <ul>
-            {event.expenses.map((e) => (
-              <li key={e.id}>
-                {e.title}: {formatCents(e.amountCents)} ({e.payerName} platio)
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-
-      <section className="card">
-        <h2>Ko kome duguje</h2>
-        {event.transfers.length === 0 ? (
-          <p>Nema dugovanja.</p>
-        ) : (
-          <ul>
-            {event.transfers.map((t, i) => (
-              <li key={i}>
-                {t.from} duguje {t.to}: {formatCents(t.amountCents)}
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-    </>
+    </div>
   )
 }
 

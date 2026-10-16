@@ -8,18 +8,19 @@ function balanceClass(cents) {
 }
 
 /**
- * Clanovi sjede za okruglim stolom po redu ulaska. U sredini su ukupan trosak i dugme "+".
+ * Clanovi sjede za stolom po redu ulaska. Slobodno mjesto poziva prijatelja.
  */
-function RoundTable({ members, totalCents, currentUserId, onAdd }) {
-  const positions = seatPositions(members.length)
+function RoundTable({ members, totalCents, currentUserId, onAdd, onInvite, inviteButtonRef, expenseButtonRef }) {
+  const seatCount = members.length + (onInvite ? 1 : 0)
+  const positions = seatPositions(seatCount)
 
   return (
-    <div className="round-table" role="group" aria-label="Sto sa clanovima dogadjaja">
+    <div className={`round-table${seatCount >= 8 ? ' crowded' : ''}`} role="group" aria-label="Sto sa clanovima dogadjaja">
       <div className="table-top">
         <span className="table-label">Ukupno</span>
         <strong className="table-total">{formatCents(totalCents)}</strong>
         {onAdd && (
-          <button type="button" className="table-add" aria-label="Dodaj trosak" onClick={onAdd}>+</button>
+          <button type="button" ref={expenseButtonRef} className="table-add" aria-label="Dodaj trosak" onClick={onAdd}>+</button>
         )}
       </div>
 
@@ -27,6 +28,7 @@ function RoundTable({ members, totalCents, currentUserId, onAdd }) {
         <div
           key={m.userId}
           className={`seat${m.userId === currentUserId ? ' me' : ''}`}
+          title={m.username}
           style={{ left: `${positions[i].left}%`, top: `${positions[i].top}%` }}
         >
           <span className="seat-name">{m.username}</span>
@@ -36,6 +38,19 @@ function RoundTable({ members, totalCents, currentUserId, onAdd }) {
           {m.archiveConsent && <span className="seat-consent" title="Saglasan za arhiviranje">&#10003;</span>}
         </div>
       ))}
+      {onInvite && (
+        <button
+          type="button"
+          ref={inviteButtonRef}
+          className="seat seat-add"
+          style={{ left: `${positions[members.length].left}%`, top: `${positions[members.length].top}%` }}
+          aria-label="Pozovi prijatelja za sto"
+          onClick={onInvite}
+        >
+          <span className="seat-add-symbol" aria-hidden="true">+</span>
+          <span>Dodaj clana</span>
+        </button>
+      )}
     </div>
   )
 }

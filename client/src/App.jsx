@@ -52,7 +52,7 @@ function App() {
                 <main className="app">
                   <Routes>
                     <Route path="/" element={<EventsPage />} />
-                    <Route path="/events/:id" element={<div className="narrow"><EventPage user={user} /></div>} />
+                    <Route path="/events/:id" element={<EventPage user={user} />} />
                     <Route path="/friends" element={<FriendsPage />} />
                     <Route path="*" element={<Navigate to="/" replace />} />
                   </Routes>
