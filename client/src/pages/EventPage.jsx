@@ -166,9 +166,6 @@ function EventPage({ user }) {
         <Link to="/" className="event-back">&larr; Dogadjaji</Link>
         <div className="event-heading">
           <h1>{event.name}</h1>
-          <span className={`event-status${event.archived ? ' archived' : ''}`}>
-            {event.archived ? 'Arhiviran' : 'Aktivan'}
-          </span>
         </div>
       </div>
 
@@ -177,6 +174,9 @@ function EventPage({ user }) {
 
       <div className="event-dashboard">
         <section className="card event-table-card" aria-label="Sto dogadjaja">
+          <span className={`event-status${event.archived ? ' archived' : ''}`}>
+            {event.archived ? 'Arhiviran' : 'Aktivan'}
+          </span>
           <RoundTable
             members={event.members}
             totalCents={event.totalCents}
@@ -205,12 +205,12 @@ function EventPage({ user }) {
             )}
           </section>
 
-          <section className="card event-detail-card">
+          <section className="card event-detail-card expenses-card">
             <h2>Troskovi <span className="count">{event.expenses.length}</span></h2>
             {event.expenses.length === 0 ? (
               <p className="muted">Nema troskova.</p>
             ) : (
-              <ul className="event-detail-list">
+              <ul className="event-detail-list" tabIndex="0" aria-label="Lista troskova">
                 {event.expenses.map((expense) => (
                   <li key={expense.id}>
                     <span><strong>{expense.title}</strong><small>{expense.payerName} platio</small></span>
