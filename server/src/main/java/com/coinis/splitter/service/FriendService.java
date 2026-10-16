@@ -93,6 +93,15 @@ public class FriendService {
         if (part.length() < MIN_SEARCH) {
             return List.of();
         }
+        return withRelations(userId, users.findTop8ByUsernameContainingIgnoreCaseAndIdNotOrderByUsernameAsc(part, userId));
+    }
+
+    /** Svi ostali korisnici, sa trenutnim statusom prijateljstva ili zahtjeva. */
+    public List<UserSearchResult> discover(long userId) {
+        return withRelations(userId, users.findAllByIdNotOrderByUsernameAsc(userId));
+    }
+
+    private List<UserSearchResult> withRelations(long userId, List<User> candidates) {
         Map<Long, UserSearchResult.Relation> relations = new HashMap<>();
         Map<Long, Long> requestIds = new HashMap<>();
         for (Friendship f : friendships.findAllInvolving(userId, Friendship.Status.ACCEPTED)) {
@@ -104,7 +113,7 @@ public class FriendService {
             relations.put(other, sentByMe ? UserSearchResult.Relation.OUTGOING : UserSearchResult.Relation.INCOMING);
             requestIds.put(other, f.getId());
         }
-        return users.findTop8ByUsernameContainingIgnoreCaseAndIdNotOrderByUsernameAsc(part, userId).stream()
+        return candidates.stream()
                 .map(u -> new UserSearchResult(u,
                         relations.getOrDefault(u.getId(), UserSearchResult.Relation.NONE),
                         requestIds.get(u.getId())))

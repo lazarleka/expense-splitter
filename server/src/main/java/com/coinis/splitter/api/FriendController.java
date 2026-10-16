@@ -9,6 +9,7 @@ import com.coinis.splitter.model.Friendship;
 import com.coinis.splitter.model.User;
 import com.coinis.splitter.security.AuthUser;
 import com.coinis.splitter.service.FriendService;
+import com.coinis.splitter.service.UserSearchResult;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -50,10 +51,17 @@ public class FriendController {
     @GetMapping("/search")
     public List<UserSearchResponse> search(@AuthenticationPrincipal AuthUser user,
             @RequestParam(name = "q", defaultValue = "") String query) {
-        return friendService.search(user.id(), query).stream()
-                .map(r -> new UserSearchResponse(r.user().getId(), r.user().getUsername(), r.relation().name(),
-                        r.requestId()))
-                .toList();
+        return toSearchResponses(friendService.search(user.id(), query));
+    }
+
+    @GetMapping("/discover")
+    public List<UserSearchResponse> discover(@AuthenticationPrincipal AuthUser user) {
+        return toSearchResponses(friendService.discover(user.id()));
+    }
+
+    private static List<UserSearchResponse> toSearchResponses(List<UserSearchResult> results) {
+        return results.stream().map(r -> new UserSearchResponse(r.user().getId(), r.user().getUsername(),
+                r.relation().name(), r.requestId())).toList();
     }
 
     @PostMapping("/requests/{id}/cancel")

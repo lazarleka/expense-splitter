@@ -13,4 +13,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     /** Pretraga po dijelu imena, bez samog korisnika koji trazi. */
     List<User> findTop8ByUsernameContainingIgnoreCaseAndIdNotOrderByUsernameAsc(String part, Long excludedId);
+
+    /** Svi korisnici za pregled liste, osim prijavljenog korisnika. */
+    List<User> findAllByIdNotOrderByUsernameAsc(Long excludedId);
 }

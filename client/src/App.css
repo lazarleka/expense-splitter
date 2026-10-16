@@ -479,8 +479,12 @@ ul.plain {
 /* ---------- Prijatelji ---------- */
 
 .friends { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 24px; align-items: start; }
+.friends-feedback { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 8px; }
 .friends-side, .friends-main { min-width: 0; display: flex; flex-direction: column; gap: 20px; }
-.friends-side .card { padding: 20px; }
+.friends-side .card, .friends-list { padding: 20px; }
+.friends-list { display: flex; flex-direction: column; gap: 16px; }
+.friends-list .section-head { margin: 0; }
+.friends-list .section-head h2 { font-size: 17px; }
 .small-text { font-size: 12px; }
 button.small { padding: 6px 10px; font-size: 13px; }
 .person-icon { width: 36px; height: 36px; flex-shrink: 0; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: var(--primary); background: var(--surface-2); border: 1px solid var(--border); }
@@ -494,7 +498,7 @@ button.small { padding: 6px 10px; font-size: 13px; }
 .search-field input { width: 100%; border: 0; padding: 10px 0; background: transparent; font-size: 14px; }
 .search-field:focus-within { outline: 2px solid var(--primary); outline-offset: 2px; }
 .search-field input:focus { outline: none; }
-.search-results { margin-top: 12px; border-top: 1px solid var(--border); }
+.search-results { height: 320px; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; margin-top: 12px; padding-right: 4px; border-top: 1px solid var(--border); }
 .tag { display: inline-block; border-radius: 999px; padding: 4px 8px; font-size: 12px; background: var(--surface-2); color: var(--positive); }
 .muted-tag { color: var(--muted); }
 .highlight { border-color: var(--primary); }

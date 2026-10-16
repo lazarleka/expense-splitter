@@ -162,6 +162,25 @@ class FriendServiceTest {
         verify(users, never()).findTop8ByUsernameContainingIgnoreCaseAndIdNotOrderByUsernameAsc(any(), any());
     }
 
+    // Scenarij "Pregled svih korisnika": lista nije ogranicena na prvih osam i cuva status odnosa
+    @Test
+    void discoverShowsAllOtherUsersWithRelations() {
+        Friendship withMarko = friendship(10, ana, marko);
+        withMarko.accept();
+        when(friendships.findAllInvolving(1L, Friendship.Status.ACCEPTED)).thenReturn(List.of(withMarko));
+        List<User> others = List.of(iva, marko,
+                user(4, "petar"), user(5, "nikola"), user(6, "milica"), user(7, "jelena"),
+                user(8, "bojan"), user(9, "darko"), user(10, "sara"));
+        when(users.findAllByIdNotOrderByUsernameAsc(1L)).thenReturn(others);
+
+        List<UserSearchResult> results = service.discover(1);
+
+        assertThat(results).hasSize(9);
+        assertThat(results).extracting(r -> r.user().getId()).doesNotContain(1L);
+        assertThat(results.get(1).relation()).isEqualTo(UserSearchResult.Relation.FRIEND);
+        verify(users).findAllByIdNotOrderByUsernameAsc(1L);
+    }
+
     // Scenarij "Pretraga i povlacenje zahtjeva": Ana povlaci svoj zahtjev
     @Test
     void senderCancelsPendingRequest() {

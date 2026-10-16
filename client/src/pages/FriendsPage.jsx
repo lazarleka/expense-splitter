@@ -3,7 +3,6 @@ import { api } from '../api.js'
 import { PersonIcon, SearchIcon } from '../components/Icons.jsx'
 
 const EMPTY = { friends: [], incoming: [], outgoing: [] }
-const MIN_SEARCH = 2
 
 const REQUEST_ERRORS = {
   400: 'Ne mozete dodati sebe.',
@@ -25,13 +24,12 @@ function FriendsPage() {
   const [data, setData] = useState(EMPTY)
   const [query, setQuery] = useState('')
   const [results, setResults] = useState([])
+  const [loadingUsers, setLoadingUsers] = useState(true)
   const [filter, setFilter] = useState('')
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
   // Povecava se posle svake akcije, da se rezultati pretrage osvjeze sa novim odnosima
   const [version, setVersion] = useState(0)
-
-  const searching = query.trim().length >= MIN_SEARCH
 
   useEffect(() => {
     let ignore = false
@@ -47,25 +45,23 @@ function FriendsPage() {
     }
   }, [version])
 
-  // Pretraga dok korisnik kuca, sa malim zadrskom da se ne salje zahtjev za svako slovo
+  // Ucitaj cijeli spisak; filtriranje po imenu se radi odmah na stranici.
   useEffect(() => {
-    const q = query.trim()
-    if (q.length < MIN_SEARCH) return undefined
     let ignore = false
-    const timer = setTimeout(() => {
-      api(`/friends/search?q=${encodeURIComponent(q)}`)
-        .then((found) => {
-          if (!ignore) setResults(found)
-        })
-        .catch((err) => {
-          if (!ignore) setError(err.message)
-        })
-    }, 250)
+    api('/friends/discover')
+      .then((found) => {
+        if (!ignore) setResults(found)
+      })
+      .catch((err) => {
+        if (!ignore) setError(err.message)
+      })
+      .finally(() => {
+        if (!ignore) setLoadingUsers(false)
+      })
     return () => {
       ignore = true
-      clearTimeout(timer)
     }
-  }, [query, version])
+  }, [version])
 
   async function act(path, body, success, errors) {
     setError('')
@@ -117,32 +113,39 @@ function FriendsPage() {
   }
 
   const visibleFriends = data.friends.filter((f) => f.username.toLowerCase().includes(filter.trim().toLowerCase()))
+  const visibleUsers = results.filter((r) => r.username.toLowerCase().includes(query.trim().toLowerCase()))
 
   return (
     <div className="friends">
+      {(error || notice) && (
+        <div className="friends-feedback">
+          {error && <p className="error" role="alert">{error}</p>}
+          {notice && <p className="notice">{notice}</p>}
+        </div>
+      )}
       <aside className="friends-side">
-        <section className="card">
+        <section className="card discover-card">
           <h2>Pronadjite ljude</h2>
           <label className="search-field">
             <SearchIcon size={18} />
             <input
               aria-label="Pretraga korisnika"
-              placeholder="Korisnicko ime (najmanje 2 slova)"
+              placeholder="Pretrazite korisnike"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
           </label>
-          {searching && (
-            <div className="search-results">
-              {results.length === 0 ? (
-                <p className="muted">Nema korisnika za "{query.trim()}".</p>
-              ) : (
-                results.map((r) => (
-                  <Person key={r.id} name={r.username}>{resultAction(r)}</Person>
-                ))
-              )}
-            </div>
-          )}
+          <div className="search-results" role="region" aria-label="Lista korisnika" tabIndex="0">
+            {loadingUsers ? (
+              <p className="muted">Ucitavanje korisnika...</p>
+            ) : visibleUsers.length === 0 ? (
+              <p className="muted">{query.trim() ? `Nema korisnika za "${query.trim()}".` : 'Nema drugih korisnika.'}</p>
+            ) : (
+              visibleUsers.map((r) => (
+                <Person key={r.id} name={r.username}>{resultAction(r)}</Person>
+              ))
+            )}
+          </div>
         </section>
 
         {data.outgoing.length > 0 && (
@@ -160,8 +163,38 @@ function FriendsPage() {
       </aside>
 
       <div className="friends-main">
-        {error && <p className="error" role="alert">{error}</p>}
-        {notice && <p className="notice">{notice}</p>}
+        <section className="card friends-list">
+          <div className="section-head between">
+            <div className="row center">
+              <h2>Prijatelji</h2>
+              <span className="count">{data.friends.length}</span>
+            </div>
+            {data.friends.length > 3 && (
+              <input
+                className="filter"
+                aria-label="Filtriraj prijatelje"
+                placeholder="Filtriraj..."
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+              />
+            )}
+          </div>
+          {data.friends.length === 0 ? (
+            <p className="empty">Jos nemate prijatelja. Pronadjite ih u listi lijevo i posaljite zahtjev.</p>
+          ) : visibleFriends.length === 0 ? (
+            <p className="empty">Nijedan prijatelj ne odgovara filteru.</p>
+          ) : (
+            <div className="friend-grid">
+              {visibleFriends.map((f) => (
+                <div key={f.id} className="card friend-card">
+                  <span className="person-icon large"><PersonIcon size={26} /></span>
+                  <strong>{f.username}</strong>
+                  <span className="muted small-text">Prijatelj</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
 
         {data.incoming.length > 0 && (
           <section className="card highlight">
@@ -175,38 +208,6 @@ function FriendsPage() {
               </Person>
             ))}
           </section>
-        )}
-
-        <div className="section-head between">
-          <div className="row center">
-            <h2>Prijatelji</h2>
-            {data.friends.length > 0 && <span className="count">{data.friends.length}</span>}
-          </div>
-          {data.friends.length > 3 && (
-            <input
-              className="filter"
-              aria-label="Filtriraj prijatelje"
-              placeholder="Filtriraj..."
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-            />
-          )}
-        </div>
-
-        {data.friends.length === 0 ? (
-          <p className="empty">Jos nemate prijatelja. Pronadjite ih pretragom lijevo i posaljite zahtjev.</p>
-        ) : visibleFriends.length === 0 ? (
-          <p className="empty">Nijedan prijatelj ne odgovara filteru.</p>
-        ) : (
-          <div className="friend-grid">
-            {visibleFriends.map((f) => (
-              <div key={f.id} className="card friend-card">
-                <span className="person-icon large"><PersonIcon size={26} /></span>
-                <strong>{f.username}</strong>
-                <span className="muted small-text">Prijatelj</span>
-              </div>
-            ))}
-          </div>
         )}
       </div>
     </div>

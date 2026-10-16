@@ -16,6 +16,8 @@
 - Korisnik vidi listu prijatelja, primljene zahtjeve na cekanju i poslate zahtjeve na cekanju.
 - Korisnik trazi druge korisnike po dijelu imena (najmanje 2 znaka, do 8 rezultata). Uz svaki rezultat
   vidi odnos: nije prijatelj, prijatelj, zahtjev poslat ili zahtjev primljen.
+- Na stranici prijatelja korisnik vidi sve druge korisnike u listi fiksne visine koju moze skrolovati i
+  filtrirati po imenu.
 - Posiljalac moze povuci zahtjev dok jos ceka odgovor.
 
 ### 3. Dogadjaji
@@ -86,6 +88,10 @@
 - Upit kraci od 2 znaka ne vraca rezultate
 - Ana posalje zahtjev Petru, pa ga povuce: Petar vise nema zahtjev, a Ana mu moze poslati novi
 - Petar ne moze povuci Anin zahtjev (moze ga samo prihvatiti ili odbiti)
+
+### Pregled svih korisnika
+- Ana na stranici prijatelja vidi sve ostale korisnike, ukljucujuci korisnike poslije osmog po redu.
+- Ana ne vidi sebe, a uz svakog korisnika vidi trenutni odnos i odgovarajucu akciju.
 
 ### Pozivnica
 - Marko i Iva su Anini prijatelji

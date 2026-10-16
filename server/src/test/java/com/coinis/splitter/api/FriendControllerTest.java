@@ -89,6 +89,18 @@ class FriendControllerTest {
     }
 
     @Test
+    void discoverShowsOtherUsersWithRelationAndRequiresLogin() throws Exception {
+        when(friendService.discover(1)).thenReturn(List.of(
+                new UserSearchResult(user(2, "marko"), UserSearchResult.Relation.FRIEND, null)));
+
+        mvc.perform(get("/api/friends/discover")).andExpect(status().isUnauthorized());
+        mvc.perform(get("/api/friends/discover").with(user(ana)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].username").value("marko"))
+                .andExpect(jsonPath("$[0].relation").value("FRIEND"));
+    }
+
+    @Test
     void cancelIsPassedToServiceForLoggedInUser() throws Exception {
         mvc.perform(post("/api/friends/requests/21/cancel").with(user(ana)).with(csrf()))
                 .andExpect(status().isNoContent());
